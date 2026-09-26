@@ -9,13 +9,13 @@ from typing import Annotated, Final
 import typer
 from redis.asyncio import Redis
 
-from production_legal_qa_rag.cache.keys import compute_corpus_version
-from production_legal_qa_rag.cache.models import CachedAnswer
-from production_legal_qa_rag.cache.singleflight import SingleFlight
-from production_legal_qa_rag.cache.store import AnswerCache, RetrievalCache
-from production_legal_qa_rag.generation.generator import PROMPT_VERSION
-from production_legal_qa_rag.generation.models import Citation
-from production_legal_qa_rag.retrieval.models import RetrievedChunk
+from production_legal_agentic_graph_rag.cache.keys import compute_corpus_version
+from production_legal_agentic_graph_rag.cache.models import CachedAnswer
+from production_legal_agentic_graph_rag.cache.singleflight import SingleFlight
+from production_legal_agentic_graph_rag.cache.store import AnswerCache, RetrievalCache
+from production_legal_agentic_graph_rag.generation.generator import PROMPT_VERSION
+from production_legal_agentic_graph_rag.generation.models import Citation
+from production_legal_agentic_graph_rag.retrieval.models import RetrievedChunk
 
 app = typer.Typer(add_completion=False)
 

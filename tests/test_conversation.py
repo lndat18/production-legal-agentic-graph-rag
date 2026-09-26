@@ -10,36 +10,39 @@ from typing import Any
 
 import pytest
 
-from production_legal_qa_rag.cache.models import CachedAnswer
-from production_legal_qa_rag.config import AdmissionSettings, CondenseSettings
-from production_legal_qa_rag.conversation.admission import (
+from production_legal_agentic_graph_rag.cache.models import CachedAnswer
+from production_legal_agentic_graph_rag.config import (
+    AdmissionSettings,
+    CondenseSettings,
+)
+from production_legal_agentic_graph_rag.conversation.admission import (
     AdmissionController,
     AdmissionDenied,
 )
-from production_legal_qa_rag.conversation.condenser import (
+from production_legal_agentic_graph_rag.conversation.condenser import (
     CondenseReason,
     QueryCondenser,
     build_condense_user_message,
     check_condensed,
     validate_condensed,
 )
-from production_legal_qa_rag.conversation.history import (
+from production_legal_agentic_graph_rag.conversation.history import (
     DATA_SNAPSHOT_DISCLAIMER,
     HISTORY_ASSISTANT_MAX_CHARS,
     SOURCES_FOOTER_MARKER,
     InvalidConversationError,
     build_window,
 )
-from production_legal_qa_rag.conversation.models import (
+from production_legal_agentic_graph_rag.conversation.models import (
     ChatMessage,
     RequestContext,
     TurnTrace,
 )
-from production_legal_qa_rag.conversation.orchestrator import (
+from production_legal_agentic_graph_rag.conversation.orchestrator import (
     ChatOrchestrator,
     _has_cacheable_citation,
 )
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.generation.models import (
     Citation,
     CitationsEvent,
     DoneEvent,
@@ -47,7 +50,7 @@ from production_legal_qa_rag.generation.models import (
     StatusEvent,
     TokenEvent,
 )
-from production_legal_qa_rag.retrieval.models import RetrievedChunk
+from production_legal_agentic_graph_rag.retrieval.models import RetrievedChunk
 
 
 def _user(text: str) -> ChatMessage:
@@ -217,7 +220,9 @@ def test_condense_detailed_reason_codes() -> None:
 
 
 def test_condense_call_params_and_prompt_guards() -> None:
-    from production_legal_qa_rag.conversation.condenser import CONDENSE_SYSTEM_PROMPT
+    from production_legal_agentic_graph_rag.conversation.condenser import (
+        CONDENSE_SYSTEM_PROMPT,
+    )
 
     condenser, fake = _condenser("Khoản 2 Điều 113 Bộ luật Lao động nói gì?")
     asyncio.run(condenser.condense("Còn Khoản 2?", HISTORY))
@@ -235,7 +240,9 @@ def test_condense_prompt_has_gendered_term_rule_and_few_shot() -> None:
     để condense không mượn thuật ngữ pháp lý riêng cho một giới tính sang chủ thể
     khác giới (ca gốc: "nghỉ thai sản" bị mượn cho "chồng").
     """
-    from production_legal_qa_rag.conversation.condenser import CONDENSE_SYSTEM_PROMPT
+    from production_legal_agentic_graph_rag.conversation.condenser import (
+        CONDENSE_SYSTEM_PROMPT,
+    )
 
     # Quy tắc 6 (nội dung, không phải chỉ số thứ tự): nêu rõ không sao chép thuật
     # ngữ chuyên biệt theo giới sang chủ thể khác nhóm.
@@ -603,7 +610,7 @@ def test_orchestrator_admission_denied_becomes_error() -> None:
 
 def test_orchestrator_gates_low_relevance_chunks_as_no_context() -> None:
     """18.2.2: 5 chunk điểm rerank thấp -> `error(no_context)`, không vào generation."""
-    from production_legal_qa_rag.retrieval.relevance import MIN_RERANK_SCORE
+    from production_legal_agentic_graph_rag.retrieval.relevance import MIN_RERANK_SCORE
 
     async def weak_retrieve(query: str) -> list[RetrievedChunk]:
         return [
@@ -643,7 +650,7 @@ def test_orchestrator_logs_max_score_when_gate_blocks(
     Chỉ log số liệu (điểm số, ngưỡng, số chunk), không log nội dung câu hỏi
     (mục 12 conversation_spec.md).
     """
-    from production_legal_qa_rag.retrieval.relevance import MIN_RERANK_SCORE
+    from production_legal_agentic_graph_rag.retrieval.relevance import MIN_RERANK_SCORE
 
     blocked_score = MIN_RERANK_SCORE - 1.5
 
@@ -669,7 +676,7 @@ def test_orchestrator_logs_max_score_when_gate_blocks(
         replay=_replay,
     )
     with caplog.at_level(
-        "INFO", logger="production_legal_qa_rag.conversation.orchestrator"
+        "INFO", logger="production_legal_agentic_graph_rag.conversation.orchestrator"
     ):
         _run(orchestrator, [_user(secret_query)])
     assert "Gate độ liên quan chặn no_context" in caplog.text

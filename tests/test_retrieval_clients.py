@@ -14,25 +14,35 @@ import pytest
 from pinecone.exceptions import NotFoundException
 from typer.testing import CliRunner
 
-from production_legal_qa_rag.chunking.models import Chunk
-from production_legal_qa_rag.config import (
+from production_legal_agentic_graph_rag.chunking.models import Chunk
+from production_legal_agentic_graph_rag.config import (
     EmbeddingSettings,
     LLMSettings,
     VectorDBSettings,
 )
-from production_legal_qa_rag.embedding.models import PineconeMetadata
-from production_legal_qa_rag.retrieval import query_embedder, reranker, sparse_index
-from production_legal_qa_rag.retrieval.bm25 import BM25Encoder
-from production_legal_qa_rag.retrieval.dense_search import DenseSearch
-from production_legal_qa_rag.retrieval.hyde import (
+from production_legal_agentic_graph_rag.embedding.models import PineconeMetadata
+from production_legal_agentic_graph_rag.retrieval import (
+    query_embedder,
+    reranker,
+    sparse_index,
+)
+from production_legal_agentic_graph_rag.retrieval.bm25 import BM25Encoder
+from production_legal_agentic_graph_rag.retrieval.dense_search import DenseSearch
+from production_legal_agentic_graph_rag.retrieval.hyde import (
     HYDE_SYSTEM_PROMPT,
     HYDE_USER_TEMPLATE,
     HydeGenerator,
 )
-from production_legal_qa_rag.retrieval.models import Candidate, RetrievalError
-from production_legal_qa_rag.retrieval.query_embedder import QueryEmbedder
-from production_legal_qa_rag.retrieval.reranker import LocalReranker
-from production_legal_qa_rag.retrieval.sparse_index import SparseIndex, build_index
+from production_legal_agentic_graph_rag.retrieval.models import (
+    Candidate,
+    RetrievalError,
+)
+from production_legal_agentic_graph_rag.retrieval.query_embedder import QueryEmbedder
+from production_legal_agentic_graph_rag.retrieval.reranker import LocalReranker
+from production_legal_agentic_graph_rag.retrieval.sparse_index import (
+    SparseIndex,
+    build_index,
+)
 
 
 @pytest.fixture

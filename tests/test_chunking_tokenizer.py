@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from production_legal_qa_rag.chunking.tokenizer import count_tokens
+from production_legal_agentic_graph_rag.chunking.tokenizer import count_tokens
 
 pytestmark = pytest.mark.slow
 

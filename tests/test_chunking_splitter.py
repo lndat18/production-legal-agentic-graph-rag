@@ -15,9 +15,9 @@ import hashlib
 
 import pytest
 
-from production_legal_qa_rag.chunking import splitter
-from production_legal_qa_rag.chunking.models import KhoanNode
-from production_legal_qa_rag.chunking.splitter import (
+from production_legal_agentic_graph_rag.chunking import splitter
+from production_legal_agentic_graph_rag.chunking.models import KhoanNode
+from production_legal_agentic_graph_rag.chunking.splitter import (
     _compose_split_breadcrumb,
     _explode_oversized,
     _khoan_base_breadcrumb,

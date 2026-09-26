@@ -14,35 +14,42 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from production_legal_qa_rag.cache.models import CachedAnswer
-from production_legal_qa_rag.config import AdmissionSettings, CondenseSettings
-from production_legal_qa_rag.conversation import admission as admission_module
-from production_legal_qa_rag.conversation.admission import (
+from production_legal_agentic_graph_rag.cache.models import CachedAnswer
+from production_legal_agentic_graph_rag.config import (
+    AdmissionSettings,
+    CondenseSettings,
+)
+from production_legal_agentic_graph_rag.conversation import (
+    admission as admission_module,
+)
+from production_legal_agentic_graph_rag.conversation.admission import (
     OVERLOADED_RETRY_AFTER_SECONDS,
     AdmissionController,
     AdmissionDenied,
 )
-from production_legal_qa_rag.conversation.condenser import (
+from production_legal_agentic_graph_rag.conversation.condenser import (
     CONDENSE_SYSTEM_PROMPT,
     MAX_OUTPUT_CHARS,
     QueryCondenser,
     build_condense_user_message,
     validate_condensed,
 )
-from production_legal_qa_rag.conversation.history import (
+from production_legal_agentic_graph_rag.conversation.history import (
     HISTORY_MAX_TURNS,
     MAX_QUERY_CHARS,
     SOURCES_FOOTER_MARKER,
     InvalidConversationError,
     build_window,
 )
-from production_legal_qa_rag.conversation.models import (
+from production_legal_agentic_graph_rag.conversation.models import (
     ChatMessage,
     RequestContext,
     TurnTrace,
 )
-from production_legal_qa_rag.conversation.orchestrator import ChatOrchestrator
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.conversation.orchestrator import (
+    ChatOrchestrator,
+)
+from production_legal_agentic_graph_rag.generation.models import (
     Citation,
     CitationsEvent,
     DoneEvent,
@@ -53,7 +60,7 @@ from production_legal_qa_rag.generation.models import (
     Usage,
     WarningEvent,
 )
-from production_legal_qa_rag.retrieval.models import RetrievedChunk
+from production_legal_agentic_graph_rag.retrieval.models import RetrievedChunk
 
 
 def _u(text: str) -> ChatMessage:

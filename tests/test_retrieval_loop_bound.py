@@ -8,8 +8,8 @@ from typing import Any
 
 import pytest
 
-from production_legal_qa_rag.retrieval.hyde import HydeGenerator
-from production_legal_qa_rag.retrieval.loop_bound import LoopBoundClient
+from production_legal_agentic_graph_rag.retrieval.hyde import HydeGenerator
+from production_legal_agentic_graph_rag.retrieval.loop_bound import LoopBoundClient
 
 
 def test_get_ngoai_coroutine_raise_runtime_error():
@@ -73,7 +73,7 @@ def test_reranker_exception_bat_ky_khong_retry_tra_none(
     monkeypatch: pytest.MonkeyPatch,
 ):
     monkeypatch.setattr(
-        "production_legal_qa_rag.retrieval.reranker_client._BACKOFF_SECONDS", 0.0
+        "production_legal_agentic_graph_rag.retrieval.reranker_client._BACKOFF_SECONDS", 0.0
     )
     calls = [0]
 

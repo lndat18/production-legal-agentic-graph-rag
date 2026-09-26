@@ -15,7 +15,7 @@ from pathlib import Path
 
 import typer
 
-from production_legal_qa_rag.chunking.pipeline import convert_directory
+from production_legal_agentic_graph_rag.chunking.pipeline import convert_directory
 
 DEFAULT_MARKDOWN_DIR = Path("data/markdown")
 DEFAULT_OUT_DIR = Path("data/chunks")

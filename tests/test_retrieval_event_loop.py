@@ -16,11 +16,11 @@ from typing import Any
 import pytest
 from test_retrieval_pipeline import FakeDense, FakeEmbedder, FakeSparse
 
-from production_legal_qa_rag.retrieval import hyde as hyde_module
-from production_legal_qa_rag.retrieval import reranker as reranker_module
-from production_legal_qa_rag.retrieval.hyde import HydeGenerator
-from production_legal_qa_rag.retrieval.pipeline import RetrievalPipeline
-from production_legal_qa_rag.retrieval.reranker import LocalReranker
+from production_legal_agentic_graph_rag.retrieval import hyde as hyde_module
+from production_legal_agentic_graph_rag.retrieval import reranker as reranker_module
+from production_legal_agentic_graph_rag.retrieval.hyde import HydeGenerator
+from production_legal_agentic_graph_rag.retrieval.pipeline import RetrievalPipeline
+from production_legal_agentic_graph_rag.retrieval.reranker import LocalReranker
 
 IDS = [f"c{i}" for i in range(1, 8)]
 created: list[Any] = []

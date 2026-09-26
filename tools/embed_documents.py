@@ -11,7 +11,7 @@ from pathlib import Path
 
 import typer
 
-from production_legal_qa_rag.embedding.pipeline import embed, upsert
+from production_legal_agentic_graph_rag.embedding.pipeline import embed, upsert
 
 DEFAULT_CHUNKS_DIR = Path("data/chunks")
 DEFAULT_EMBEDDINGS_DIR = Path("data/embeddings")

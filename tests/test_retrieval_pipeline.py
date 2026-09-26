@@ -8,10 +8,13 @@ from typing import Any
 
 import pytest
 
-from production_legal_qa_rag.embedding.models import PineconeMetadata
-from production_legal_qa_rag.retrieval import pipeline as pipeline_module
-from production_legal_qa_rag.retrieval.models import RetrievalError, SearchHit
-from production_legal_qa_rag.retrieval.pipeline import (
+from production_legal_agentic_graph_rag.embedding.models import PineconeMetadata
+from production_legal_agentic_graph_rag.retrieval import pipeline as pipeline_module
+from production_legal_agentic_graph_rag.retrieval.models import (
+    RetrievalError,
+    SearchHit,
+)
+from production_legal_agentic_graph_rag.retrieval.pipeline import (
     FINAL_TOP_K,
     RetrievalPipeline,
 )
@@ -88,7 +91,9 @@ class FakeDense:
         }
 
     async def fill_missing(self, candidates: Any, *, need_values: bool) -> Any:
-        from production_legal_qa_rag.retrieval.dense_search import DenseSearch
+        from production_legal_agentic_graph_rag.retrieval.dense_search import (
+            DenseSearch,
+        )
 
         return await DenseSearch.fill_missing(
             self,  # type: ignore[arg-type]
@@ -350,8 +355,10 @@ def test_passage_rerank_bat_dau_bang_breadcrumb_roi_xuong_dong_roi_content(
 
 
 def test_build_rerank_passages_giu_thu_tu_union():
-    from production_legal_qa_rag.retrieval.models import Candidate
-    from production_legal_qa_rag.retrieval.pipeline import build_rerank_passages
+    from production_legal_agentic_graph_rag.retrieval.models import Candidate
+    from production_legal_agentic_graph_rag.retrieval.pipeline import (
+        build_rerank_passages,
+    )
 
     union = [
         Candidate(chunk_id=i, rrf_score=1.0, metadata=_meta(i)) for i in ("c3", "c1")
@@ -383,8 +390,10 @@ def test_retrieved_chunk_content_khong_chua_breadcrumb_va_diem_cao_dung_chunk():
 def test_build_rerank_passages_khong_hong_voi_breadcrumb_dac_biet(
     breadcrumb: str, content: str
 ):
-    from production_legal_qa_rag.retrieval.models import Candidate
-    from production_legal_qa_rag.retrieval.pipeline import build_rerank_passages
+    from production_legal_agentic_graph_rag.retrieval.models import Candidate
+    from production_legal_agentic_graph_rag.retrieval.pipeline import (
+        build_rerank_passages,
+    )
 
     metadata = PineconeMetadata(
         content=content,
@@ -398,8 +407,10 @@ def test_build_rerank_passages_khong_hong_voi_breadcrumb_dac_biet(
 
 
 def test_build_rerank_passages_rong_va_thieu_metadata():
-    from production_legal_qa_rag.retrieval.models import Candidate
-    from production_legal_qa_rag.retrieval.pipeline import build_rerank_passages
+    from production_legal_agentic_graph_rag.retrieval.models import Candidate
+    from production_legal_agentic_graph_rag.retrieval.pipeline import (
+        build_rerank_passages,
+    )
 
     assert build_rerank_passages([]) == []
     with pytest.raises(RetrievalError):

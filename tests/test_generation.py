@@ -10,7 +10,7 @@ from typing import Any
 import pytest
 from pydantic import TypeAdapter, ValidationError
 
-from production_legal_qa_rag.generation.generator import (
+from production_legal_agentic_graph_rag.generation.generator import (
     GENERATION_SYSTEM_PROMPT,
     PROMPT_VERSION,
     AnswerGenerator,
@@ -20,13 +20,16 @@ from production_legal_qa_rag.generation.generator import (
     build_messages,
     build_repair_messages,
 )
-from production_legal_qa_rag.generation.guardrail import (
+from production_legal_agentic_graph_rag.generation.guardrail import (
     INJECTION_MESSAGE,
     OUT_OF_SCOPE_MESSAGE,
     InputGuardrail,
 )
-from production_legal_qa_rag.generation.judge import EvidenceJudge, JudgeError
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.generation.judge import (
+    EvidenceJudge,
+    JudgeError,
+)
+from production_legal_agentic_graph_rag.generation.models import (
     Citation,
     DoneEvent,
     ErrorEvent,
@@ -37,9 +40,12 @@ from production_legal_qa_rag.generation.models import (
     Usage,
     VerificationIssue,
 )
-from production_legal_qa_rag.generation.output_check import check_output
-from production_legal_qa_rag.generation.pipeline import GenerationPipeline
-from production_legal_qa_rag.retrieval.models import RetrievalError, RetrievedChunk
+from production_legal_agentic_graph_rag.generation.output_check import check_output
+from production_legal_agentic_graph_rag.generation.pipeline import GenerationPipeline
+from production_legal_agentic_graph_rag.retrieval.models import (
+    RetrievalError,
+    RetrievedChunk,
+)
 
 
 def _chunk(

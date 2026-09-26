@@ -35,8 +35,8 @@ from docx.opc.exceptions import PackageNotFoundError
 from pydantic import ValidationError
 from typer.testing import CliRunner
 
-from production_legal_qa_rag.config import LLMSettings
-from production_legal_qa_rag.formatting import (
+from production_legal_agentic_graph_rag.config import LLMSettings
+from production_legal_agentic_graph_rag.formatting import (
     backmatter,
     emitter,
     frontmatter,
@@ -45,18 +45,18 @@ from production_legal_qa_rag.formatting import (
     tables,
     validator,
 )
-from production_legal_qa_rag.formatting.docx_reader import (
+from production_legal_agentic_graph_rag.formatting.docx_reader import (
     Block,
     chunk_blocks_for_llm,
     read_docx,
     serialize_blocks_for_llm,
 )
-from production_legal_qa_rag.formatting.models import (
+from production_legal_agentic_graph_rag.formatting.models import (
     FormattingResult,
     QcWarning,
     QcWarningCode,
 )
-from production_legal_qa_rag.formatting.patterns import (
+from production_legal_agentic_graph_rag.formatting.patterns import (
     RE_DIEM,
     RE_DIEU,
     RE_FOOTNOTE_MARKER,
@@ -67,7 +67,7 @@ from production_legal_qa_rag.formatting.patterns import (
     sort_key,
     strip_markers,
 )
-from production_legal_qa_rag.formatting.pipeline import (
+from production_legal_agentic_graph_rag.formatting.pipeline import (
     convert_directory,
     convert_docx_to_markdown,
     write_atomic,

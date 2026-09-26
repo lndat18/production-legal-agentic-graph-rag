@@ -6,8 +6,8 @@ description: Quy ước coding chuẩn production cho project — kiến trúc t
 
 ## Kiến trúc thư mục & package
 
-- Toàn bộ source code có thể import được phải nằm trong `src/production_legal_qa_rag/`
-- Mỗi logic nghiệp vụ tách thành 1 package riêng. Ví dụ: logic chunking → `src/production_legal_qa_rag/chunking/`
+- Toàn bộ source code có thể import được phải nằm trong `src/production_legal_agentic_graph_rag/`
+- Mỗi logic nghiệp vụ tách thành 1 package riêng. Ví dụ: logic chunking → `src/production_legal_agentic_graph_rag/chunking/`
 - Trong mỗi package, chia nhỏ thành nhiều module phục vụ cho logic đó (không gộp hết vào 1 file)
 - Không cần đề cập đến việc viết tests trong spec — đã có agent CI/CD riêng đảm nhiệm
 
@@ -49,7 +49,7 @@ Module này xử lý bước chunking trong pipeline ingestion, nhận đầu v�
 Markdown đã chuẩn hóa và trả về danh sách đoạn văn bản sẵn sàng embedding.
 """
 
-from production_legal_qa_rag.chunking.models import Chunk
+from production_legal_agentic_graph_rag.chunking.models import Chunk
 ```
 
 Ví dụ function-level:
