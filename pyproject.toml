@@ -1,0 +1,67 @@
+[project]
+name = "production-legal-agentic-graph-rag"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "lndat", email = "datdev181104@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "groq>=1.7.0",
+    "huggingface-hub>=1.31.0",
+    "langchain-openai>=1.6.4",
+    "langchain-text-splitters>=1.1.2",
+    "pinecone>=8.0.0",
+    "protobuf>=7.36.2",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.7.0",
+    "python-docx>=1.2.0",
+    "pyvi>=0.1.1",
+    "pyyaml>=6.0.3",
+    "redis>=8.1.0",
+    "sentencepiece>=0.2.2",
+    "torch>=2.0.0",
+    "transformers>=4.47.0",
+    "typer>=0.27.1",
+]
+
+[project.scripts]
+production-legal-qa-rag = "production_legal_qa_rag:main"
+
+[build-system]
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: test nạp model thật (~20s), bỏ qua bằng -m 'not slow'",
+]
+# "." để import được `tests.fixtures.blocks` và `tests.loader_under_test`.
+pythonpath = ["src", "."]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.14",
+    "mypy>=1.14",
+    "types-pyyaml>=6.0.12.20260906",
+]
+
+[tool.ruff.lint.flake8-bugbear]
+# typer.Option()/typer.Argument() làm default value là idiom chuẩn của Typer,
+# không phải bug thật như B008 giả định (mutable default argument).
+extend-immutable-calls = ["typer.Option", "typer.Argument"]
+
+[tool.mypy]
+# `LLMSettings` (`config.py`) có field bắt buộc không default (`groq_api_key`,
+# nạp từ biến môi trường qua `pydantic-settings`) — không có plugin này, mypy
+# báo giả "Missing named argument" ở mọi nơi gọi `LLMSettings()` mà không
+# truyền `groq_api_key` trực tiếp (formatting/llm_client.py).
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+# pyvi không phát hành type stub / py.typed marker.
+module = ["pyvi", "pyvi.*"]
+ignore_missing_imports = true
