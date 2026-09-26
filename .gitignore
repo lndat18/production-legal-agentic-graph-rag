@@ -10,3 +10,22 @@ data/bm25/
 
 # Model artifacts tải cục bộ để chạy offline; không đưa weights lớn vào Git.
 models/
+
+# Package kế thừa chưa dùng tới trong phase phát triển graph/agentic hiện tại (2026-09-26,
+# xem CLAUDE.md mục 3). Vẫn còn code + test trên đĩa, chỉ tạm untrack khỏi git.
+src/production_legal_agentic_graph_rag/api/
+src/production_legal_agentic_graph_rag/cache/
+src/production_legal_agentic_graph_rag/chatlog/
+src/production_legal_agentic_graph_rag/conversation/
+src/production_legal_agentic_graph_rag/generation/
+src/production_legal_agentic_graph_rag/retrieval/
+tests/test_cache.py
+tests/test_conversation.py
+tests/test_conversation_scenarios.py
+tests/test_generation.py
+tests/test_retrieval_*.py
+tools/cache.py
+tools/conversation.py
+tools/generation.py
+tools/retrieval.py
+tools/sparse_index_documents.py
