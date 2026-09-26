@@ -24,6 +24,7 @@ tests/test_conversation.py
 tests/test_conversation_scenarios.py
 tests/test_generation.py
 tests/test_retrieval_*.py
+tests/test_tools_conversation.py
 tools/cache.py
 tools/conversation.py
 tools/generation.py
