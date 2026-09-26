@@ -178,6 +178,25 @@ class JudgeSettings(BaseSettings):
     timeout_seconds: int = 45
 
 
+class GraphSettings(BaseSettings):
+    """Config kết nối Neo4j cho `graph/` (`graph_spec.md` mục 4).
+
+    Server Neo4j Community Edition chạy local qua Docker (chưa nằm trong
+    `docker-compose` hiện tại, thuộc `deploy_spec.md`, xem `CLAUDE.md` mục 3)
+    — trước khi chạy `graph.pipeline.run_ingest()` phải có Neo4j reachable
+    qua `uri`. `password` không có default vì là secret thật, khác
+    `uri`/`user`/`database` là giá trị mặc định chuẩn của Neo4j Community
+    khi chạy local.
+    """
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    uri: str = Field(default="bolt://localhost:7687", validation_alias="NEO4J_URI")
+    user: str = Field(default="neo4j", validation_alias="NEO4J_USER")
+    password: str = Field(validation_alias="NEO4J_PASSWORD")
+    database: str = Field(default="neo4j", validation_alias="NEO4J_DATABASE")
+
+
 class RerankerSettings(BaseSettings):
     """Config LocalReranker chạy in-process (retrieval_spec.md mục 6.1).
 
