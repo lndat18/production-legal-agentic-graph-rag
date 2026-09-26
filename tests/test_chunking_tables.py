@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from production_legal_qa_rag.chunking.tables import parse_pipe_table, standardize_table
+from production_legal_agentic_graph_rag.chunking.tables import (
+    parse_pipe_table,
+    standardize_table,
+)
 
 # ==========================================================================
 # parse_pipe_table

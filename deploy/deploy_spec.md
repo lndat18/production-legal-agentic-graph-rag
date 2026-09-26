@@ -168,7 +168,7 @@ không crash service.
 - `data/bm25/` **không** đóng gói vào image (file sinh ra, đã `.gitignore`); mount từ host
   read-only. Thiếu file → `api` lỗi rõ ràng lúc khởi động, không chạy nửa vời.
 - Lệnh chạy: `alembic upgrade head` rồi
-  `uvicorn production_legal_qa_rag.api.app:create_app --factory --host 0.0.0.0 --port 8000 --workers 1`.
+  `uvicorn production_legal_agentic_graph_rag.api.app:create_app --factory --host 0.0.0.0 --port 8000 --workers 1`.
   Chạy migration ở đây an toàn vì chỉ có 1 worker/1 container.
 - **1 worker**: semaphore của admission là in-process (`conversation_spec.md` mục 8).
 - `.dockerignore`: `.venv/`, `.git/`, `data/`, `tests/`, `.env`, `deploy/.env`, cache của

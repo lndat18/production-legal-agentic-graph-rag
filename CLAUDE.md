@@ -49,10 +49,10 @@ cache/quota/rate-limit, Docker) **giữ nguyên** từ repo cũ — xem `api/api
   bản, xem mục 3)
 - Evaluation: ragas, DeepEval
 
-## 3. Trạng thái hiện tại (2026-09-25) & việc cần làm
+## 3. Trạng thái hiện tại (2026-09-26) & việc cần làm
 
 **Đã có** (kế thừa từ `production-legal-qa-rag`, đủ spec + code + test, xem
-`src/production_legal_qa_rag/*/*_spec.md`):
+`src/production_legal_agentic_graph_rag/*/*_spec.md`):
 
 - Offline: chunking, embedding (dense HF→Pinecone), sparse index (BM25→Pinecone)
 - Online: retrieval (hybrid + RRF + MMR + rerank), conversation orchestrator đơn-agent
@@ -66,12 +66,20 @@ cache/quota/rate-limit, Docker) **giữ nguyên** từ repo cũ — xem `api/api
 - `docs/online_flow.md` mô tả luồng đơn-agent **hiện tại** — sẽ cần vẽ lại khi
   `agents_spec.md` thành hình
 
+**Lưu ý (2026-09-26):** `api/`, `cache/`, `chatlog/`, `conversation/`, `generation/`,
+`retrieval/` dưới `src/production_legal_agentic_graph_rag/` đang bị gitignore + untrack
+tạm thời (xem `.gitignore`) trong lúc trọng tâm phát triển là `chunking/`, `embedding/`,
+`formatting/` và `graph/` mới. Code các package này vẫn còn nguyên trên đĩa ở working
+tree hiện tại (chạy/tham khảo được bình thường) nhưng **không còn nằm trong git** —
+clone mới của repo này từ commit hiện tại sẽ không có các thư mục đó cho tới khi được
+add lại có chủ đích.
+
 **Chưa có — trọng tâm phát triển tiếp theo, chưa có spec nào:**
 
 - [X] **Đổi tên package** `production_legal_qa_rag` → `production_legal_agentic_graph_rag`
-  (đã chốt 2026-09-25, **chưa thực hiện trong code** — `pyproject.toml` và
-  `src/production_legal_qa_rag/` vẫn tên cũ). Làm việc này TRƯỚC khi bắt đầu spec mới
-  để mọi import mới dùng đúng tên ngay từ đầu.
+  — đã chốt 2026-09-25, **đã thực hiện trong code** 2026-09-26 (branch `rename-package`,
+  chờ merge vào `main`): `pyproject.toml` và `src/production_legal_agentic_graph_rag/`
+  cùng toàn bộ import liên quan đã dùng tên mới.
 - [ ] Schema Knowledge Graph pháp luật trong Neo4j (Văn bản–Điều–Khoản–Điểm, quan hệ
   tham chiếu/sửa đổi/thay thế...) + pipeline ingest từ chunks → graph
 - [ ] MCP layer: expose retrieval (vector + graph) thành MCP server/tools cho các agent
@@ -126,10 +134,9 @@ danh sách cấp sẵn cho bất kỳ subagent nào — luôn cần người dù
 
 Xem đầy đủ tại skill `coding-convention` (`.claude/skills/coding-convention/SKILL.md`). Tóm tắt:
 
-- Code import được nằm trong `src/production_legal_agentic_graph_rag/` (**sau khi đổi
-  tên** — hiện tại vẫn `src/production_legal_qa_rag/`, xem mục 3); mỗi domain nghiệp vụ
-  một package riêng (`chunking/`, `retrieval/`, `graph/`, `agents/`, `mcp/`,...), không
-  gộp logic khác domain vào chung 1 thư mục.
+- Code import được nằm trong `src/production_legal_agentic_graph_rag/` (đã đổi tên, xem
+  mục 3); mỗi domain nghiệp vụ một package riêng (`chunking/`, `retrieval/`, `graph/`,
+  `agents/`, `mcp/`,...), không gộp logic khác domain vào chung 1 thư mục.
 - `snake_case` module/hàm/biến, `PascalCase` class, `UPPER_SNAKE_CASE` hằng số, prefix
   `_` cho nội bộ module. Tên mô tả rõ hành vi, tránh viết tắt tối nghĩa.
 - **Pydantic v2** `BaseModel` cho mọi cấu trúc dữ liệu trao đổi giữa package (không
@@ -154,10 +161,10 @@ uvx pip-audit                 # audit dependency
 ## 8. Cấu trúc thư mục
 
 ```
-src/production_legal_qa_rag/   # sẽ đổi tên — mục 3
-  api/            conversation/   cache/       chatlog/
-  chunking/       embedding/      retrieval/   formatting/
-  generation/     config.py       __init__.py
+src/production_legal_agentic_graph_rag/
+  chunking/       embedding/      formatting/  config.py    __init__.py
+  # api/, cache/, chatlog/, conversation/, generation/, retrieval/
+  # — kế thừa từ repo cũ, gitignore + untrack tạm thời, xem mục 3
   # <package mới>/graph/, agents/, mcp/  — chưa tồn tại, mục 3
 tests/            # 1 test module tương ứng mỗi package trên
 tools/            # CLI Typer, script vận hành (chunk/embed/retrieval/generation/...)

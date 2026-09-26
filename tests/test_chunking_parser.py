@@ -16,9 +16,11 @@ from pathlib import Path
 
 import pytest
 
-from production_legal_qa_rag.chunking import splitter
-from production_legal_qa_rag.chunking.parser import parse_markdown
-from production_legal_qa_rag.chunking.pipeline import convert_markdown_to_chunks
+from production_legal_agentic_graph_rag.chunking import splitter
+from production_legal_agentic_graph_rag.chunking.parser import parse_markdown
+from production_legal_agentic_graph_rag.chunking.pipeline import (
+    convert_markdown_to_chunks,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MARKDOWN_DIR = PROJECT_ROOT / "data" / "markdown"

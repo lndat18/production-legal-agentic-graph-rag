@@ -16,8 +16,10 @@ from pathlib import Path
 
 import pytest
 
-from production_legal_qa_rag.chunking.pipeline import convert_markdown_to_chunks
-from production_legal_qa_rag.config import EmbeddingSettings
+from production_legal_agentic_graph_rag.chunking.pipeline import (
+    convert_markdown_to_chunks,
+)
+from production_legal_agentic_graph_rag.config import EmbeddingSettings
 
 pytestmark = pytest.mark.slow
 
@@ -260,7 +262,7 @@ def test_convert_directory_tren_toan_bo_corpus_that_co_summary(tmp_path: Path, c
     _require_corpus()
     import shutil
 
-    from production_legal_qa_rag.chunking.pipeline import convert_directory
+    from production_legal_agentic_graph_rag.chunking.pipeline import convert_directory
 
     markdown_dir = tmp_path / "markdown"
     out_dir = tmp_path / "out"
@@ -288,7 +290,7 @@ def test_convert_directory_khop_dung_output_da_commit_san():
     _require_corpus()
     import json
 
-    from production_legal_qa_rag.chunking.pipeline import convert_directory
+    from production_legal_agentic_graph_rag.chunking.pipeline import convert_directory
 
     chunks_dir = PROJECT_ROOT / "data" / "chunks"
     if not chunks_dir.exists():
