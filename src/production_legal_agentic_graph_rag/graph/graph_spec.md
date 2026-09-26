@@ -127,11 +127,24 @@ Neo4j — đây là điểm test được mà không cần Neo4j thật (mục 9
 | --- | --- | --- |
 | `VanBan` | `source_document` (dùng trực tiếp, đã unique theo `chunking_spec.md`) | — |
 | `Phan`, `Chuong`, `Muc` | `source_document` + nhãn cấp đó + mọi cấp cha (vd `"LUẬT BHXH\|Chuong:I"`) | `label: str` (nguyên văn sau "Chương "/"Mục "/"Phần ", giữ số La Mã nếu có, không ép `int`) |
-| `Dieu` | `source_document` + toạ độ đủ tới Điều | `number: int`, `title: str` |
-| `Khoan` | `source_document` + toạ độ đủ tới Khoản | `number: int`, `chunk_ids: list[str]` (thứ tự `split_index`), `breadcrumb: str` (bản đầy đủ, để debug/log) |
+| `Dieu` | `source_document` + toạ độ đủ tới Điều | `number: str`, `title: str` |
+| `Khoan` | `source_document` + toạ độ đủ tới Khoản | `number: str \| None`, `chunk_ids: list[str]` (thứ tự `split_index`), `breadcrumb: str` (bản đầy đủ, để debug/log) |
 
 Bỏ cấp không tồn tại trong toạ độ, giống quy tắc breadcrumb ở `chunking_spec.md` mục 4.
 `title`/`label` **không** nằm trong khoá hash (bất biến 3, mục 3).
+
+`number: str` (không `int`) cho cả `Dieu`/`Khoan`: corpus thật có Điều/Khoản mang hậu tố
+chữ do sửa đổi luật chèn thêm mà không đánh số lại (`Điều 7a`/`48b` — Luật bảo hiểm y tế;
+`Khoản 3a`/`5a`/`8a` — nhiều văn bản khác), ép `int` sẽ loại các Điều/Khoản này (và mọi
+Khoản con) khỏi đồ thị — mất dữ liệu thật. Cùng lựa chọn và cùng lý do với
+`chunking/models.py::KhoanNode.khoan_number: str | None` đã có sẵn.
+
+**Khoản ngầm định cấp Điều**: một số Điều có nội dung nằm thẳng dưới heading Điều, không
+tách Khoản riêng (`chunking_spec.md` mục 4, vd `"Điều 1. Phạm vi điều chỉnh"` không có
+"Khoản 1." tường minh) — đo trên corpus mẫu, ~5% tổng số chunk. Vẫn tạo **một** node
+`Khoan` cho trường hợp này (giữ đúng bất biến 2, mục 3: không bỏ nội dung hợp lệ), với
+`number = None`; `id` hash dùng token cố định thay cho số Khoản để phân biệt với `id` của
+chính `Dieu` cha. `HAS_CHILD` từ `Dieu` sang `Khoan` ngầm định này như bình thường.
 
 ### Relationship
 
@@ -166,10 +179,13 @@ node với `chunk_ids=["cf1acc4a...", "ba1d7eda..."]` theo đúng thứ tự ph�
    thể kèm hậu tố `(phần i/n)`. Log số lượng bỏ qua để đối chiếu tổng chunk.
 2. Với chunk còn lại: cắt hậu tố `(phần i/n)` rồi hậu tố `- Điểm ...` (nếu Khoản có Điểm
    bị tách) để có **breadcrumb gốc** — dùng làm khoá gộp các mảnh `is_split`.
-3. Tách breadcrumb gốc theo `" - "`; đoạn đầu là `source_document`; các đoạn sau khớp
-   tiền tố `Phần `/`Chương `/`Mục `/`Điều `/`Khoản ` theo đúng thứ tự xuất hiện trong
-   `chunking_spec.md` mục 4 (bỏ cấp vắng mặt). `Điều {n}. {tên}` tách số và tên bằng dấu
-   `.` đầu tiên sau số.
+3. Định vị từng cấp trong breadcrumb gốc bằng regex nhận diện token cấp (`Phần `/`Chương
+   `/`Mục `/`Điều `/`Khoản ` + số/nhãn ngay sau) theo đúng thứ tự xuất hiện trong
+   `chunking_spec.md` mục 4 (bỏ cấp vắng mặt), **không** tách chuỗi thô theo `" - "` — dữ
+   liệu thật có tên Điều tự chứa `" - "` (vd `"Điều 136. Trách nhiệm của Bộ Lao động -
+   Thương binh và Xã hội"`, Luật bảo hiểm xã hội), tách literal sẽ vỡ tên Điều thành đoạn
+   giả và làm rớt toàn bộ Khoản con của Điều đó ra khỏi đồ thị. `Điều {n}. {tên}` tách số
+   và tên bằng dấu `.` đầu tiên sau số.
 4. Gom mọi chunk có cùng breadcrumb gốc thành một `Khoan`, `chunk_ids` sắp theo
    `split_index` tăng dần (không tin thứ tự chunk trong file JSON).
 5. Chunk lỗi (breadcrumb không khớp pattern nào ở bước 3) bị bỏ qua + log rõ
@@ -185,8 +201,16 @@ hiện có trong `data/raw` — tự viết mới cho `graph/`, không import `r
 theo pattern:
 
 ```text
-[khoản (\d+) ]?Điều (\d+)[ của (<cụm từ văn bản>)]?
+[(khoản|các khoản) (\d+[a-z]?)(, \d+[a-z]?)*( và \d+[a-z]?)? ]?Điều (\d+[a-z]?)[ của (<cụm từ văn bản>)]?
+[điểm ...]?
 ```
+
+Số Điều/Khoản có thể mang hậu tố chữ (`7a`, `48b`,...) cùng lý do mục 5 (Điều/Khoản sửa
+đổi chèn thêm). **Liệt kê nhiều khoản trước một Điều** (`"các khoản 6, 7, 9 và 10 Điều
+34"`) phải tạo **nhiều** `REFERENCES` edge từ cùng một `raw_text` gốc, mỗi edge một
+`Khoan` đích — đây là core use case viện dẫn chéo (mục 1), không phải case ambiguous nên
+không bị bất biến 5 (mục 3) chặn lại, chỉ đơn thuần cần pattern đủ rộng để bắt danh sách
+số cách nhau bởi dấu phẩy/"và".
 
 Với guard tránh false positive tương tự tinh thần `retrieval/citation.py` (không tái sử
 dụng code, nhưng cùng nguyên tắc đã chứng minh đúng ở đó): biên từ (`\b`), không nhận khi
@@ -200,11 +224,15 @@ hành". Resolve cụm văn bản bắt được (nếu có), sau khi chuẩn ho�
 - Có cụm nhưng khớp alias trong `documents.py` → **khác văn bản**, target là `VanBan` đó.
 - Có cụm nhưng không khớp alias nào → **không resolve được**, bỏ qua + log (bất biến 5).
 
-Sau khi có `(khoan, dieu, document_target)`: tìm node `Dieu` khớp trong đồ thị đã build
-(cùng `VanBan` xác định ở trên); nếu câu trích có số Khoản và `Khoan` đó tồn tại dưới
-`Dieu` này, target là `Khoan`; nếu không, target là `Dieu`. Không tìm thấy Điều đích
-(target document có trong corpus nhưng không có Điều đó, ví dụ lỗi đánh số nguồn) → bỏ
-qua + log, không tạo node giả (bất biến 5, mục 3 "Ngoài phạm vi").
+Sau khi có `(khoan_list, dieu, document_target)` — `khoan_list` có thể rỗng (không nhắc
+số Khoản), một số, hoặc nhiều số khi liệt kê: tìm node `Dieu` khớp trong đồ thị đã build
+(cùng `VanBan` xác định ở trên). Với `khoan_list` rỗng, target là chính `Dieu`. Với mỗi số
+trong `khoan_list`, nếu `Khoan` đó tồn tại dưới `Dieu` này thì tạo một `REFERENCES` edge
+tới `Khoan` đó (cùng `raw_text` gốc cho mọi edge sinh từ một câu trích); số nào không tồn
+tại thì bỏ qua riêng số đó + log, không chặn các số còn lại trong cùng danh sách. Không
+tìm thấy Điều đích (target document có trong corpus nhưng không có Điều đó, ví dụ lỗi
+đánh số nguồn) → bỏ qua + log toàn bộ câu trích, không tạo node giả (bất biến 5, mục 3
+"Ngoài phạm vi").
 
 ## 8. Idempotency và cập nhật corpus
 
