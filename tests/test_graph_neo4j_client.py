@@ -20,6 +20,8 @@ from collections.abc import Iterator
 
 import pytest
 from neo4j import GraphDatabase
+from neo4j.exceptions import GqlError
+from pydantic import ValidationError
 
 from production_legal_agentic_graph_rag.config import GraphSettings
 from production_legal_agentic_graph_rag.graph.models import (
@@ -36,11 +38,12 @@ pytestmark = pytest.mark.slow
 
 
 def _load_settings_or_skip() -> GraphSettings:
+    # Thiếu `NEO4J_PASSWORD` (không set trong `.env`/biến môi trường) không
+    # phải lỗi test, chỉ là môi trường hiện tại chưa sẵn sàng chạy tích hợp
+    # Neo4j (mục 11: CI "not slow" mặc định không yêu cầu điều này).
     try:
         return GraphSettings()  # type: ignore[call-arg]
-    except Exception as error:  # cấu hình thiếu (vd NEO4J_PASSWORD) -- không
-        # phải lỗi test, chỉ là môi trường hiện tại chưa sẵn sàng chạy tích
-        # hợp Neo4j (mục 11: CI "not slow" mặc định không yêu cầu điều này).
+    except ValidationError as error:
         pytest.skip(f"GraphSettings chưa cấu hình đủ để chạy tích hợp: {error}")
 
 
@@ -52,7 +55,7 @@ def _connect_or_skip(settings: GraphSettings) -> Neo4jClient:
         # 1 lần kiểm tra "có Neo4j sống không" trước khi chạy test thật.
         client._driver.verify_connectivity()  # type: ignore[attr-defined]
         client.ensure_constraints()
-    except Exception as error:
+    except GqlError as error:
         client.close()
         pytest.skip(f"Không kết nối được Neo4j tại {settings.uri}: {error}")
     return client
