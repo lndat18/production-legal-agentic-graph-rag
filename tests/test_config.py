@@ -15,6 +15,7 @@ from pydantic import ValidationError
 from production_legal_agentic_graph_rag.config import (
     EmbeddingSettings,
     GenerationSettings,
+    GraphSettings,
     GuardrailSettings,
     JudgeSettings,
     LLMSettings,
@@ -348,3 +349,45 @@ def test_reranker_settings_doc_env_va_validate_gia_tri_duong(
     monkeypatch.setenv("RERANKER_BATCH_SIZE", "-1")
     with pytest.raises(ValidationError):
         RerankerSettings()  # type: ignore[call-arg]
+
+
+# ==========================================================================
+# GraphSettings -- kết nối Neo4j (graph_spec.md mục 4)
+# ==========================================================================
+
+
+def test_graph_settings_gia_tri_mac_dinh_dung_spec(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("NEO4J_URI", raising=False)
+    monkeypatch.delenv("NEO4J_USER", raising=False)
+    monkeypatch.delenv("NEO4J_DATABASE", raising=False)
+    monkeypatch.setenv("NEO4J_PASSWORD", "test-password")
+    settings = GraphSettings()  # type: ignore[call-arg]
+    assert settings.uri == "bolt://localhost:7687"
+    assert settings.user == "neo4j"
+    assert settings.database == "neo4j"
+    assert settings.password == "test-password"
+
+
+def test_graph_settings_doc_dung_bien_moi_truong(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("NEO4J_URI", "bolt://neo4j-host:7687")
+    monkeypatch.setenv("NEO4J_USER", "custom-user")
+    monkeypatch.setenv("NEO4J_PASSWORD", "secret")
+    monkeypatch.setenv("NEO4J_DATABASE", "legaldb")
+    settings = GraphSettings()  # type: ignore[call-arg]
+    assert settings.uri == "bolt://neo4j-host:7687"
+    assert settings.user == "custom-user"
+    assert settings.password == "secret"
+    assert settings.database == "legaldb"
+
+
+def test_graph_settings_bao_loi_khi_thieu_neo4j_password(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    # `password` không có default (secret thật, khác `uri`/`user`/`database`
+    # là giá trị mặc định chuẩn của Neo4j Community khi chạy local, mục 4).
+    monkeypatch.delenv("NEO4J_PASSWORD", raising=False)
+    monkeypatch.setattr(
+        GraphSettings, "model_config", {**GraphSettings.model_config, "env_file": None}
+    )
+    with pytest.raises(ValidationError):
+        GraphSettings()  # type: ignore[call-arg]
