@@ -293,9 +293,7 @@ def test_vien_dan_cheo_tao_reference_edge_giua_2_khoan_da_build():
     ]
     document, _, _ = build_graph_document(chunks)
     khoan_by_chunk = {
-        chunk_id: khoan.id
-        for khoan in document.khoans
-        for chunk_id in khoan.chunk_ids
+        chunk_id: khoan.id for khoan in document.khoans for chunk_id in khoan.chunk_ids
     }
     assert len(document.references) == 1
     reference = document.references[0]
