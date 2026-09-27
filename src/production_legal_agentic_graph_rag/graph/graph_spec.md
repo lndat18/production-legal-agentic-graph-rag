@@ -201,7 +201,7 @@ hiện có trong `data/raw` — tự viết mới cho `graph/`, không import `r
 theo pattern:
 
 ```text
-[(khoản|các khoản) (\d+[a-z]?)(, \d+[a-z]?)*( và \d+[a-z]?)? ]?Điều (\d+[a-z]?)[ của (<cụm từ văn bản>)]?
+[(khoản|các khoản) (\d+[a-z]?)(, \d+[a-z]?)*( và \d+[a-z]?)? ]?Điều (\d+[a-z]?|này)[ của (<cụm từ văn bản>)]?
 [điểm ...]?
 ```
 
@@ -211,6 +211,13 @@ Số Điều/Khoản có thể mang hậu tố chữ (`7a`, `48b`,...) cùng lý
 `Khoan` đích — đây là core use case viện dẫn chéo (mục 1), không phải case ambiguous nên
 không bị bất biến 5 (mục 3) chặn lại, chỉ đơn thuần cần pattern đủ rộng để bắt danh sách
 số cách nhau bởi dấu phẩy/"và".
+
+**`Điều này`** (tự tham chiếu chính Điều đang chứa câu trích, không có số — dữ liệu thật:
+`"các khoản 1, 4, 5, 6 và 7 Điều này"`): `dieu` resolve thành chính `Dieu` cha của `Khoan`
+đang quét (biết được vì `references.py` chạy sau khi đã build hierarchy ở mục 6, có sẵn
+toạ độ của `Khoan` nguồn), `document_target` luôn là **cùng văn bản** (không thể có cụm
+"của ..." đi kèm "Điều này" — tự tham chiếu và tham chiếu văn bản khác loại trừ lẫn nhau).
+Vẫn áp dụng đúng quy tắc liệt kê nhiều khoản ở trên nếu có.
 
 Với guard tránh false positive tương tự tinh thần `retrieval/citation.py` (không tái sử
 dụng code, nhưng cùng nguyên tắc đã chứng minh đúng ở đó): biên từ (`\b`), không nhận khi
