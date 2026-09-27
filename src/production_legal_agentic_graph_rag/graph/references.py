@@ -53,12 +53,19 @@ _KHOAN_LIST_GROUP = (
 # viện dẫn Điều 34 ngay sau, làm mất khoan_list của viện dẫn đó. Nên
 # `doc_phrase` còn phải dừng trước điểm bắt đầu 1 viện dẫn mới (`điều`/
 # `khoản`/`các khoản`), không chỉ trước dấu câu.
+#
+# `dieu` còn nhận literal "này" (tự tham chiếu chính Điều đang chứa câu trích
+# -- dữ liệu thật "các khoản 1, 4, 5, 6 và 7 Điều này", `Luật bảo hiểm xã
+# hội`): không có số nên phải resolve bằng toạ độ của `Khoan` nguồn đang quét
+# (`extract_references` xử lý riêng, xem bên dưới), không tra `dieu_ids` bằng
+# giá trị "này".
+_SELF_DIEU_LITERAL = "này"
 _DOC_PHRASE_STOP = r"[,;.\n)]|(?:các\s+)?khoản\b|điều\b"
 _REFERENCE = re.compile(
     r"(?<!\w)"
     r"(?:điểm\s+(?P<diem>[a-zđ](?:\s*,\s*[a-zđ])*)\s+)?"
     rf"{_KHOAN_LIST_GROUP}"
-    r"điều\s*(?:thứ\s+)?(?P<dieu>\d{1,3}[a-zđ]?)(?!\w)"
+    rf"điều\s*(?:thứ\s+)?(?P<dieu>\d{{1,3}}[a-zđ]?|{_SELF_DIEU_LITERAL})(?!\w)"
     rf"(?:\s+của\s+(?P<doc_phrase>(?:(?!{_DOC_PHRASE_STOP}).)+))?",
     re.IGNORECASE,
 )
@@ -104,6 +111,11 @@ def extract_references(
     danh sách) -- đây là core use case viện dẫn chéo (mục 1), không phải case
     mơ hồ nên không bị bất biến 5 chặn.
 
+    "Điều này" (tự tham chiếu, vd "các khoản 1, 4, 5, 6 và 7 Điều này") resolve
+    thẳng về `Dieu` cha của chính `khoan` đang quét (`khoan.dieu.number`,
+    `khoan.source_document`), bỏ qua mọi `doc_phrase` bắt được -- tự tham
+    chiếu và tham chiếu văn bản khác loại trừ lẫn nhau (mục 7).
+
     Args:
         khoan: Khoản nguồn (đã gộp `is_split` ở `breadcrumb.py`); `content`
             chỉ dùng tạm ở đây, không được ghi vào bất kỳ node nào.
@@ -130,9 +142,19 @@ def extract_references(
             continue
 
         raw_text = match.group(0).strip()
-        target_document = resolve_document_phrase(
-            match.group("doc_phrase"), khoan.source_document
-        )
+        dieu_group = match.group("dieu")
+        if dieu_group.casefold() == _SELF_DIEU_LITERAL:
+            # "Điều này" không thể đi kèm cụm "của ..." (tự tham chiếu và
+            # tham chiếu văn bản khác loại trừ lẫn nhau, mục 7) -- bỏ qua
+            # `doc_phrase` dù regex có bắt được gì phía sau, dùng thẳng toạ
+            # độ Dieu cha của chính Khoan đang quét.
+            target_document: str | None = khoan.source_document
+            dieu_number = khoan.dieu.number
+        else:
+            target_document = resolve_document_phrase(
+                match.group("doc_phrase"), khoan.source_document
+            )
+            dieu_number = dieu_group
         if target_document is None:
             logger.info(
                 "Bỏ qua viện dẫn không resolve được văn bản đích: raw_text=%r, "
@@ -142,7 +164,6 @@ def extract_references(
             )
             continue
 
-        dieu_number = match.group("dieu")
         dieu_target_id = dieu_ids.get((target_document, dieu_number))
         if dieu_target_id is None:
             logger.info(
