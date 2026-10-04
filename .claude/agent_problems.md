@@ -88,6 +88,17 @@ trong `reviewer.md` mạnh hơn thực tế.
 **C4. `git restore *` và `git checkout -- *` bị deny** nên mọi agent không khôi phục được
 file bị xóa nhầm; người dùng phải tự chạy. Có chủ ý (an toàn) nhưng cần ghi nhận.
 
+**C5. `Read(.env)` bị deny nhưng `Bash(cat *)`, `grep *`, `head *`, `sed -n *`, `awk *` và
+`source .env*` đều được allow.** Tool Read bị chặn nhưng `cat .env` qua Bash thì không;
+`source .env` còn nạp bí mật vào shell. Mâu thuẫn với nguyên tắc trong `CLAUDE.md`
+("bí mật chỉ ở `.env`, agent không đọc"). Deny cũng chưa phủ `.env.*` (ngoại trừ
+`.env.example`).
+
+**C6. Danh sách deny có thể bị vòng qua bằng lệnh đã allow.** `rm *` bị deny nhưng
+`find * -delete` / `find * -exec ...` nằm trong allowlist `find *`; `awk *` chạy được
+`system()`. Cần quyết định: siết allowlist (vd. bỏ `awk`, `find` kèm `-delete`/`-exec`),
+hay chấp nhận rủi ro vì đây là dự án cá nhân và dựa vào prompt.
+
 ## D. Thiếu so với nhu cầu của project mới
 
 **D1. Không có bước đo chất lượng thật.** `CLAUDE.md` đặt nguyên tắc "đo bằng số trước khi
@@ -110,6 +121,24 @@ ngữ tách bạch trong tài liệu.
 
 **D5. Model.** Cả 4 agent dùng `model: sonnet`. `architect` và `reviewer` là hai vai trò
 cần suy luận sâu nhất; có thể cân nhắc model mạnh hơn cho hai vai trò này.
+
+## Quyết định đã chốt (2026-10-04)
+
+| Mục | Quyết định |
+| --- | --- |
+| A1, A2 | `tester` sở hữu `tests/`, `developer` sở hữu `src/`. Lỗi CI do test, và finding `test-coverage` của reviewer, quay về `tester`; lỗi do source quay về `developer`. |
+| Tester chạy local | Cho phép `uv run pytest -m "not slow" <file test vừa viết/sửa>` làm kiểm tra nhanh trước khi push. Không chạy full suite, ruff, mypy. CI vẫn là kết quả chính thức; vẫn cấm nới assertion chỉ để xanh. |
+| A3, B1 | Người dùng tự tạo branch và commit spec sau khi chốt với `architect`, rồi mới gọi `/develop-cycle`. |
+| B3 | Việc không có spec (chore, docs, đổi tên, cấu hình) làm tay, chỉ cần CI xanh; ghi rõ vào `CLAUDE.md`. |
+| C2 | Tin prompt, không thêm hook chặn push. |
+| C1 | Giữ deny `git branch -D`; người dùng tự xóa branch sau merge; sửa `CLAUDE.md` cho khớp. |
+| D1 | Đo golden testset bằng một skill chạy tay, không đưa vào vòng lặp tự động. |
+| D2 | Phương án kết hợp: unit test dùng fake qua interface mỏng (vd. `GraphStore`); integration test (marker `integration`) chạy Neo4j thật ở job CI riêng khi diff đụng package graph, ban đầu chưa bắt buộc. Chốt chi tiết trong spec graph. Cần có người chịu trách nhiệm chạy integration trước khi merge, tránh lặp bài học "CI xanh chưa đủ". |
+| D5 | `architect`: Opus 5.5, effort medium. `developer`, `tester`, `reviewer`: Sonnet 5.5, effort medium. Khi sửa file, tra tài liệu để xác nhận cách khai báo effort trong frontmatter. |
+
+**Chưa chốt:** a) trạng thái spec (`Draft | Approved | Implemented`); b) lưu ledger vòng lặp
+bằng comment gắn nhãn trên PR; c) checklist sau merge trong `CLAUDE.md`; d) severity `nit`
+không chặn của reviewer; C5, C6 (siết quyền Bash); A4, A5, B2, B4, B5, D3, D4.
 
 ## Thứ tự đề xuất khi chốt
 
