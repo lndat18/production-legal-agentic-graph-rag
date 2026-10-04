@@ -1,0 +1,32 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.db
+.env
+
+
+# Sinh ra bởi tools/sparse_index_documents.py, phải khớp với sparse index đang có trên Pinecone
+data/bm25/
+
+# Model artifacts tải cục bộ để chạy offline; không đưa weights lớn vào Git.
+models/
+
+# Backup pg_dump sinh bởi deploy/backup.sh (deploy_spec.md mục 8) — chứa dữ liệu người dùng.
+deploy/backups/
+
+# Sinh ra bởi tools/generate_testset.py (evaluation_spec.md mục 4.5): KG chứa embedding nên rất
+# lớn, dựng lại được; *.tmp là file ghi dở của lần ghi nguyên tử. golden_testset*.json và
+# generation_progress.json cần commit nên KHÔNG ignore.
+data/eval/knowledge_graph/
+data/eval/**/*.tmp
+
+# Phase 2 embedding vectors are local intermediates.
+data/eval/phase2/embeddings.jsonl
+
+# LaTeX build artifacts
+*.aux
+*.fls
+*.fdb_latexmk
+*.out
+
+/resume/

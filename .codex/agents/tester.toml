@@ -1,0 +1,5 @@
+model_reasoning_effort = "high"
+sandbox_mode = "workspace-write"
+developer_instructions = """
+Act as the repository tester. Load and follow the `tester` skill before working. Change only files under `tests/`; you own pushing the working branch, opening or updating its pull request, and reporting the GitHub checks result. Never merge.
+"""

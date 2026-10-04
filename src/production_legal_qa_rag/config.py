@@ -1,0 +1,313 @@
+"""Config tập trung dùng chung cho embedding model, vector DB (Pinecone), LLM.
+
+Nằm **ngoài** package `chunking/` vì không thuộc riêng 1 business logic nào —
+`embedding/` và các bước sau (retrieval/generation) cũng import từ đây thay
+vì đọc `.env` trực tiếp (chunking_spec.md mục 7).
+
+Chỉ khai field đã có giá trị thật hoặc đã chốt tên biến — không thêm field
+cho tính năng chưa được thiết kế (tránh over-engineering).
+"""
+
+from __future__ import annotations
+
+from pydantic import AliasChoices, Field, SecretStr
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class EmbeddingSettings(BaseSettings):
+    """Config embedding model — dùng để đếm token (chunking/) và sinh vector
+    (embedding/, ngoài phạm vi package này)."""
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    model_name: str = "CODE4LIFEOFFICIAL/huydang-dek21-embedding-v2"
+    max_tokens: int = 236
+    hf_token: str = Field(validation_alias="HF_TOKEN")
+
+
+class VectorDBSettings(BaseSettings):
+    """Config Pinecone — VectorDB đã chốt (đổi từ Postgres/pgvector ban đầu).
+
+    `docker-compose.yml` hiện vẫn có thể chạy Postgres cho việc khác ngoài
+    lưu vector — spec không quyết định có bỏ Postgres hay không, để ngỏ cho
+    quyết định sau.
+    """
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    pinecone_api_key: str = Field(validation_alias="PINECONE_API_KEY")
+    index_name: str = Field(validation_alias="PINECONE_INDEX_NAME")
+    sparse_index_name: str = Field(validation_alias="PINECONE_SPARSE_INDEX_NAME")
+    cloud: str = "aws"
+    region: str = "us-east-1"
+
+
+class LLMSettings(BaseSettings):
+    """Config LLM dùng chung cho nhiều bước.
+
+    `model_name`/`max_retries`/`timeout_seconds` đã chốt cho nhu cầu của
+    `formatting/` (chuyển đổi front matter/back matter sang markdown bằng
+    Groq API free tier, `openai/gpt-oss-120b`, xem `formatting_spec.md` mục
+    1.1, 4). Bước retrieval/generation sau này có thể cần model khác — chưa
+    đoán trước ở đây, để ngỏ cho quyết định sau (tránh over-engineering).
+
+    `chunk_token_limit`/`tpm_limit`/`rpm_limit` phục vụ riêng cơ chế chunking
+    + sliding-window rate limiter của `formatting/llm_client.py` (mục 1.2
+    spec) — Groq free tier cho `openai/gpt-oss-120b` giới hạn RPM 30, RPD
+    1.000, TPM 8.000, TPD 200.000; `tpm_limit`/`rpm_limit` ở đây là giới hạn
+    gốc (chưa nhân hệ số an toàn — hệ số 0.9 áp dụng ngay trong
+    `llm_client.py`, không lưu ở đây để tránh hai nơi cùng giữ một hằng số
+    dẫn xuất).
+
+    `groq_api_key_2` (mục 1.3 spec) — key Groq thứ 2, TÙY CHỌN. Khi có mặt,
+    `llm_client.convert_chunks_concurrently` dispatch job qua 2 thread worker
+    chạy đồng thời (mỗi worker gắn chết 1 key, 1 rate-limiter độc lập) thay
+    vì lặp tuần tự bằng key 1. Không set → giữ nguyên hành vi tuần tự 1 key
+    hiện có, không lỗi, không cảnh báo.
+    """
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    groq_api_key: str = Field(validation_alias="GROQ_API_KEY_1")
+    groq_api_key_2: str | None = Field(default=None, validation_alias="GROQ_API_KEY_2")
+    model_name: str = "openai/gpt-oss-120b"
+    max_retries: int = 2
+    timeout_seconds: int = 30
+    chunk_token_limit: int = 1500
+    tpm_limit: int = 8000
+    rpm_limit: int = 30
+
+
+class GuardrailSettings(BaseSettings):
+    """Cấu hình Groq riêng cho bước kiểm tra an toàn đầu vào."""
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    api_key: str = Field(validation_alias="GROQ_API_KEY_1")
+    model_name: str = "openai/gpt-oss-safeguard-20b"
+    max_retries: int = 2
+    timeout_seconds: int = 30
+
+
+class CondenseSettings(BaseSettings):
+    """Cấu hình Groq cho bước condense câu follow-up (conversation_spec.md mục 5).
+
+    Dùng model ``gpt-oss-20b`` trên ``GROQ_API_KEY_1`` để tách bucket khỏi
+    generation (``gpt-oss-120b``); chung bucket với HyDE nên hai bước dùng chung
+    throttle (conversation_spec.md mục 12.1). Timeout ngắn vì condense lỗi thì
+    degrade về câu gốc, không đáng để người dùng chờ.
+    """
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    api_key: str = Field(validation_alias="GROQ_API_KEY_1")
+    model_name: str = "openai/gpt-oss-20b"
+    max_retries: int = 1
+    timeout_seconds: int = 20
+
+
+class AdmissionSettings(BaseSettings):
+    """Giới hạn đồng thời của phần tốn LLM (conversation_spec.md mục 9, 12).
+
+    Admission không giữ quota theo user hay theo ngày. Khi Groq hết hạn mức,
+    pipeline nhận 429 thật và chuyển thành event ``rate_limited``.
+    """
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    max_concurrent_answers: int = 2
+    max_waiting: int = 6
+
+
+class RedisSettings(BaseSettings):
+    """Kết nối Redis dùng chung cho cache và các giới hạn phân tán sau này."""
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    redis_url: str = "redis://localhost:6379/0"
+
+
+class CacheSettings(BaseSettings):
+    """Cấu hình versioning cho cache không phụ thuộc vào lớp API."""
+
+    model_config = SettingsConfigDict(
+        env_file=".env", extra="ignore", env_ignore_empty=True
+    )
+
+    corpus_version: str | None = Field(
+        default=None, validation_alias="CACHE_CORPUS_VERSION"
+    )
+
+
+class GenerationSettings(BaseSettings):
+    """Cấu hình Groq cho bước sinh câu trả lời có stream (model 120b).
+
+    Generation là bước tốn TPD nhất pipeline (conversation_spec.md mục 16.2) nên
+    dùng riêng cặp tài khoản nặng: ``api_key`` ưu tiên ``GROQ_API_KEY_3``, fallback
+    ``GROQ_API_KEY_1``. Khi có thêm ``GROQ_API_KEY_4`` (tài khoản Groq thứ 4, TÙY
+    CHỌN), ``AnswerGenerator`` round-robin giữa key 3 và key 4 theo từng lượt gọi
+    (draft/repair) để giãn TPD ra 2 tài khoản thay vì dồn vào 1 — quan sát thật
+    2026-09-27: dùng hết ~200k TPD chỉ trong 1 phiên test nhiều lượt liên tiếp trên
+    1 tài khoản. Key 1, 2 dành cho nhóm bước nhẹ (conversation_spec.md mục 12.1).
+    """
+
+    model_config = SettingsConfigDict(
+        env_file=".env", extra="ignore", env_ignore_empty=True
+    )
+
+    api_key: str = Field(
+        validation_alias=AliasChoices("GROQ_API_KEY_3", "GROQ_API_KEY_1")
+    )
+    round_robin_api_key: str | None = Field(
+        default=None, validation_alias="GROQ_API_KEY_4"
+    )
+    model_name: str = "openai/gpt-oss-120b"
+    max_retries: int = 2
+    timeout_seconds: int = 60
+
+
+class JudgeSettings(BaseSettings):
+    """Cấu hình Evidence Judge độc lập với client generation.
+
+    Judge chạy ``gpt-oss-20b`` trên tài khoản nhẹ thứ 2: ưu tiên ``GROQ_API_KEY_2``,
+    fallback ``GROQ_API_KEY_1`` (conversation_spec.md mục 12.1). Model, timeout và
+    retry riêng để thay đổi evaluator không ảnh hưởng prompt tạo answer.
+    """
+
+    model_config = SettingsConfigDict(
+        env_file=".env", extra="ignore", env_ignore_empty=True
+    )
+
+    api_key: str = Field(
+        validation_alias=AliasChoices("GROQ_API_KEY_2", "GROQ_API_KEY_1")
+    )
+    model_name: str = "openai/gpt-oss-20b"
+    max_retries: int = 1
+    timeout_seconds: int = 45
+
+
+class HydeSettings(BaseSettings):
+    """Cấu hình Groq cho bước HyDE (retrieval_spec.md mục 3, 4).
+
+    Tách khỏi ``LLMSettings`` vì đó là config của ``formatting/`` (120b): đổi model
+    ở đó sẽ kéo formatting đổi theo. HyDE chạy ``gpt-oss-20b`` trên ``GROQ_API_KEY_1``,
+    chung bucket với condense (conversation_spec.md mục 12.1).
+    """
+
+    model_config = SettingsConfigDict(
+        env_file=".env", extra="ignore", env_ignore_empty=True
+    )
+
+    api_key: str = Field(validation_alias="GROQ_API_KEY_1")
+    model_name: str = "openai/gpt-oss-20b"
+    max_retries: int = 2
+    timeout_seconds: int = 30
+
+
+class ThrottleSettings(BaseSettings):
+    """Giới hạn của throttle bucket ``gpt-oss-20b`` dùng chung (conversation_spec.md mục 12.1).
+
+    Chỉ là giá trị mặc định hợp lý, chỉnh bằng env ``THROTTLE_*`` khi cần — không
+    có bước đo đi kèm. ``tpm_limit``/``rpm_limit`` là giới hạn gốc của Groq free
+    tier; hệ số ``safety_factor`` (cùng 0.9 với ``formatting/llm_client.py``) áp dụng
+    bên trong ``TokenWindowThrottle``. ``*_completion_tokens`` là ước lượng số token
+    output (kể cả reasoning) mỗi bước, cộng với ước lượng token prompt từ
+    ``chars_per_token``; sai số được bù bằng ``usage`` thật khi response có.
+    """
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_prefix="THROTTLE_",
+        extra="ignore",
+        env_ignore_empty=True,
+    )
+
+    tpm_limit: int = Field(default=8000, gt=0)
+    rpm_limit: int = Field(default=30, gt=0)
+    safety_factor: float = Field(default=0.9, gt=0, le=1)
+    chars_per_token: float = Field(default=3.0, gt=0)
+    condense_completion_tokens: int = Field(default=500, ge=0)
+    hyde_completion_tokens: int = Field(default=400, ge=0)
+    judge_completion_tokens: int = Field(default=600, ge=0)
+    optional_step_max_wait_seconds: float = Field(default=8.0, ge=0)
+
+
+class RerankerSettings(BaseSettings):
+    """Config LocalReranker chạy in-process (retrieval_spec.md mục 6.1).
+
+    Model (`AITeamVN/Vietnamese_Reranker`) chạy trong `RetrievalPipeline`,
+    không qua HTTP/microservice. Device tự phát hiện (`cuda`/`cpu`) khi load.
+    `max_length` và `batch_size` có thể ghi đè qua biến môi trường
+    `RERANKER_MAX_LENGTH` và `RERANKER_BATCH_SIZE`.
+    """
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_prefix="RERANKER_",
+        extra="ignore",
+        env_ignore_empty=True,
+    )
+
+    model_name: str = Field(default="AITeamVN/Vietnamese_Reranker", min_length=1)
+    max_length: int = Field(default=512, gt=0)
+    batch_size: int = Field(default=16, gt=0)
+
+
+class TestsetGeneratorSettings(BaseSettings):
+    """Cấu hình 9 tài khoản Groq round-robin cho generator_llm (Phase 1 RAGAS, mục 3.1).
+
+    Cả 9 key BẮT BUỘC và KHÔNG được rỗng (không optional/fallback như
+    GenerationSettings/JudgeSettings) — round-robin chỉ có ý nghĩa khi đủ 9 tài khoản
+    độc lập; thiếu key nào, hoặc để trống như `GROQ_API_KEY_5=` trong `.env.example`,
+    pydantic báo lỗi rõ ràng ngay lúc khởi tạo thay vì âm thầm chạy round-robin với ít
+    tài khoản hơn.
+    """
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    api_key: str = Field(min_length=1, validation_alias="GROQ_API_KEY_1")
+    api_key_2: str = Field(min_length=1, validation_alias="GROQ_API_KEY_2")
+    api_key_3: str = Field(min_length=1, validation_alias="GROQ_API_KEY_3")
+    api_key_4: str = Field(min_length=1, validation_alias="GROQ_API_KEY_4")
+    api_key_5: str = Field(min_length=1, validation_alias="GROQ_API_KEY_5")
+    api_key_6: str = Field(min_length=1, validation_alias="GROQ_API_KEY_6")
+    api_key_7: str = Field(min_length=1, validation_alias="GROQ_API_KEY_7")
+    api_key_8: str = Field(min_length=1, validation_alias="GROQ_API_KEY_8")
+    api_key_9: str = Field(min_length=1, validation_alias="GROQ_API_KEY_9")
+    model_name: str = "openai/gpt-oss-120b"
+    max_retries: int = 2
+    timeout_seconds: int = 60
+
+
+class LangfuseSettings(BaseSettings):
+    """Kết nối Langfuse self-host (observability_spec.md mục 4).
+
+    Để trống public_key/secret_key -> SDK tự chuyển sang chế độ disabled
+    (mục 4.1), không cần cờ bật/tắt riêng. `api` khi dev luôn chạy trực tiếp
+    trên host (`uv run uvicorn`), không nằm cùng network Docker với
+    `langfuse-web` — base_url mặc định trỏ vào cổng `langfuse-web` publish ra
+    host (`observability/docker-compose.yml`: `127.0.0.1:3001:3000`),
+    không phải tên service nội bộ Docker.
+    """
+
+    model_config = SettingsConfigDict(
+        env_file=".env", env_prefix="LANGFUSE_", extra="ignore", env_ignore_empty=True
+    )
+
+    public_key: SecretStr | None = None
+    secret_key: SecretStr | None = None
+    base_url: str = "http://localhost:3001"
+
+
+class ApiSettings(BaseSettings):
+    """Cấu hình lớp HTTP OpenAI-compatible (api_spec.md mục 10).
+
+    ``chatbot_api_key`` là bí mật riêng giữa OpenWebUI và backend (mục 4), so
+    sánh bằng ``secrets.compare_digest`` ở ``api/auth.py`` — không log giá trị.
+    """
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    chatbot_api_key: SecretStr = Field(validation_alias="CHATBOT_API_KEY")
+    rate_limit_per_minute: int = 5
+    keepalive_seconds: float = 15.0

@@ -1,0 +1,111 @@
+[project]
+name = "production-legal-qa-rag"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "lndat", email = "datdev181104@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.115.0",
+    "groq>=1.7.0",
+    "huggingface-hub>=1.31.0",
+    "langchain-openai>=1.6.4",
+    "langchain-text-splitters>=1.1.2",
+    "pinecone>=8.0.0",
+    "protobuf>=7.36.2",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.7.0",
+    "python-docx>=1.2.0",
+    "pyvi>=0.1.1",
+    "pyyaml>=6.0.3",
+    "redis>=8.1.0",
+    "sentencepiece>=0.2.2",
+    "torch>=2.0.0",
+    "transformers>=4.47.0",
+    "typer>=0.27.1",
+    "uvicorn[standard]>=0.38.0",
+]
+
+[project.scripts]
+production-legal-qa-rag = "production_legal_qa_rag:main"
+
+[build-system]
+requires = ["uv_build>=0.12.0,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: test nạp model thật (~20s), bỏ qua bằng -m 'not slow'",
+]
+# "." để import được `tests.fixtures.blocks` và `tests.loader_under_test`.
+pythonpath = ["src", "."]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.14",
+    "mypy>=1.14",
+    "pyqt6>=6.11.0",
+    "types-pyyaml>=6.0.12.20260906",
+    "seaborn>=0.13.2",
+]
+eval = [
+    "langchain-community<0.4",
+    # Phase 2 dùng generator/HyDE production, import tracing Langfuse trực tiếp.
+    "langfuse>=4.15.6",
+    "ragas>=0.4.3",
+    # ragas import rapidfuzz lúc dựng OverlapScoreBuilder nhưng không khai báo là dependency.
+    "rapidfuzz",
+]
+# Dependency thật của đường online (observability_spec.md mục 3) + ràng buộc version
+# `openai` khi KHÔNG cài `eval`. Lý do ràng buộc `openai`: `ragas`/`instructor` (nhóm
+# `eval`) ép `jiter<0.15`, kéo `openai` xuống bản cũ (3.3.0) nếu để `uv` resolve chung
+# một bản cho mọi nhóm. Khai báo `production` xung đột với `eval` (bên dưới) buộc `uv`
+# tách resolve `openai` riêng cho từng nhóm, thay vì hạ cấp `openai` mà `langchain-openai`
+# dùng cho Groq thật trong production.
+production = [
+    "langfuse>=4.15.6",
+    "openai>=3.19.0",
+    "prometheus-fastapi-instrumentator>=8.1.0",
+]
+
+[tool.ruff.lint.flake8-bugbear]
+# typer.Option()/typer.Argument() làm default value là idiom chuẩn của Typer,
+# không phải bug thật như B008 giả định (mutable default argument).
+extend-immutable-calls = ["typer.Option", "typer.Argument"]
+
+[tool.mypy]
+# `LLMSettings` (`config.py`) có field bắt buộc không default (`groq_api_key`,
+# nạp từ biến môi trường qua `pydantic-settings`) — không có plugin này, mypy
+# báo giả "Missing named argument" ở mọi nơi gọi `LLMSettings()` mà không
+# truyền `groq_api_key` trực tiếp (formatting/llm_client.py).
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+# pyvi không phát hành type stub / py.typed marker.
+module = ["pyvi", "pyvi.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# `ragas` chỉ nằm trong dependency-group `eval` (không cài khi `uv sync` mặc định,
+# xem [dependency-groups] production/eval) — `mypy src` vẫn phải chạy được trên
+# venv mặc định (không có `eval`) nên bỏ qua "import-not-found" cho module này.
+module = ["ragas", "ragas.*"]
+ignore_missing_imports = true
+
+[tool.uv]
+# `dev` vẫn dùng chung được với `eval` (chạy lint/test trên code evaluation).
+# `production` (xem comment cạnh khai báo ở [dependency-groups]) mặc định bật cùng
+# `dev` để `uv sync` không cờ vẫn cài đủ dependency đường online (langfuse,
+# prometheus-fastapi-instrumentator) và giữ `openai>=3.19.0`; xung đột với `eval` để
+# bắt buộc tách resolve.
+default-groups = ["dev", "production"]
+conflicts = [
+    [
+        { group = "production" },
+        { group = "eval" },
+    ],
+]
