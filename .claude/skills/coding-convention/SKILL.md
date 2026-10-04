@@ -6,41 +6,37 @@ description: Quy ước coding chuẩn production cho project — kiến trúc t
 
 ## Kiến trúc thư mục & package
 
-- Toàn bộ source code có thể import được phải nằm trong `src/production_legal_agentic_graph_rag/`
-- Mỗi logic nghiệp vụ tách thành 1 package riêng. Ví dụ: logic chunking → `src/production_legal_agentic_graph_rag/chunking/`
-- Trong mỗi package, chia nhỏ thành nhiều module phục vụ cho logic đó (không gộp hết vào 1 file)
-- Spec không cần liệt kê test cụ thể (agent `tester` đảm nhiệm), nhưng phải mô tả đủ hành vi quan trọng, gồm lỗi và trường hợp biên, vì `tester` và `reviewer` suy test từ spec. Phần phụ thuộc dịch vụ ngoài (Neo4j...) ghi rõ dùng fake qua interface mỏng hay cần integration thật (marker `integration`)
+- Mọi source import được nằm trong `src/production_legal_agentic_graph_rag/`.
+- Mỗi logic nghiệp vụ một package riêng, vd. chunking → `src/production_legal_agentic_graph_rag/chunking/`.
+- Trong package, chia nhiều module theo logic; không gộp vào một file.
+- Spec không cần liệt kê test cụ thể (agent `tester` đảm nhiệm) nhưng phải mô tả đủ hành vi quan trọng, gồm lỗi và trường hợp biên, vì `tester` và `reviewer` suy test từ spec.
+- Phụ thuộc dịch vụ ngoài (Neo4j...): ghi rõ dùng fake qua interface mỏng hay cần integration thật (marker `integration`).
 
-## Naming conventions
+## Naming
 
-- Module/file: `snake_case.py`
-- Class: `PascalCase`
-- Function/variable: `snake_case`
-- Constant: `UPPER_SNAKE_CASE`
-- Private (nội bộ module): prefix `_underscore`
-- Tên phải mô tả rõ hành vi, tránh viết tắt tối nghĩa (`chunk_legal_document` thay vì `proc_doc`)
+- Module/file `snake_case.py`; class `PascalCase`; function/variable `snake_case`; constant `UPPER_SNAKE_CASE`; private `_underscore`.
+- Tên mô tả rõ hành vi, tránh viết tắt tối nghĩa (`chunk_legal_document`, không `proc_doc`).
 
 ## Định dạng & cấu trúc mã
 
-- Format bằng **Ruff** (`ruff format` + `ruff check`) — thay thế Black/isort/flake8, chạy trong `pyproject.toml`
-- Type hint bắt buộc cho mọi function signature (tham số + return type)
-- Ưu tiên `src/` layout (đã đúng với cấu trúc hiện tại của project)
-- Import order: stdlib → third-party → local, cách nhau 1 dòng trắng (Ruff tự sắp xếp)
-- Mỗi function nên làm 1 việc, độ dài hợp lý (không quá ~40-50 dòng), tách nhỏ nếu logic phức tạp
+- Format bằng **Ruff** (`ruff format` + `ruff check`, cấu hình trong `pyproject.toml`); thay Black/isort/flake8.
+- Type hint bắt buộc cho mọi function signature (tham số + return).
+- `src/` layout; import order stdlib → third-party → local, cách nhau một dòng trắng (Ruff tự sắp).
+- Mỗi function làm một việc, ~40–50 dòng trở xuống; tách nhỏ khi logic phức tạp.
 
 ## Comments
 
-- Comment giải thích **tại sao** (why), không giải thích **cái gì** (what) — code đã tự nói cái gì
-- Không để comment thừa/lặp lại tên hàm
-- Đánh dấu rõ `# TODO:`, `# FIXME:` kèm ngữ cảnh ngắn nếu để lại việc chưa xong
+- Giải thích **tại sao**, không giải thích **cái gì**.
+- Không comment thừa/lặp tên hàm.
+- Việc chưa xong: `# TODO:` / `# FIXME:` kèm ngữ cảnh ngắn.
 
-## Docstring chuẩn PEP 8 / PEP 257
+## Docstring (PEP 8 / PEP 257)
 
-- Mọi module, class, public function đều có docstring
-- **Module-level docstring**: mỗi file `.py` bắt đầu bằng docstring mô tả module này làm công việc gì, đặt ngay dòng đầu file, trước phần import
-- Format: dòng tóm tắt ngắn → dòng trống → mô tả chi tiết (nếu cần) → `Args:` / `Returns:` / `Raises:` (với function)
+- Mọi module, class, public function đều có docstring.
+- Module-level: mỗi file `.py` mở đầu bằng docstring mô tả module làm gì, đặt ngay dòng đầu, trước import.
+- Format: dòng tóm tắt → dòng trống → mô tả chi tiết (nếu cần) → `Args:` / `Returns:` / `Raises:` (với function).
 
-Ví dụ module-level:
+Module-level:
 
 ```python
 """Tách văn bản pháp luật thành các đoạn nhỏ theo cấp Khoản/Điểm.
@@ -52,7 +48,7 @@ Markdown đã chuẩn hóa và trả về danh sách đoạn văn bản sẵn s�
 from production_legal_agentic_graph_rag.chunking.models import Chunk
 ```
 
-Ví dụ function-level:
+Function-level:
 
 ```python
 def split_by_khoan(text: str, max_tokens: int = 192) -> list[str]:
@@ -67,39 +63,37 @@ def split_by_khoan(text: str, max_tokens: int = 192) -> list[str]:
     """
 ```
 
-## Data validation — dùng Pydantic
+## Data validation: Pydantic
 
-- Mọi cấu trúc dữ liệu trao đổi giữa các package (input/output của pipeline) định nghĩa bằng **Pydantic v2** `BaseModel`, không dùng `dict` thô hoặc `dataclass` trần
-- Pydantic tự validate kiểu dữ liệu tại runtime, giảm lỗi ẩn khi dữ liệu từ nguồn ngoài (docx, API) không đúng format
+- Mọi cấu trúc dữ liệu trao đổi giữa các package (input/output pipeline) dùng **Pydantic v2** `BaseModel`; không dùng `dict` thô hay `dataclass` trần.
+- Validate kiểu tại runtime, giảm lỗi ẩn khi dữ liệu ngoài (docx, API) sai format.
 
-## CLI — dùng Typer thay cho argparse
+## CLI: Typer
 
-- Mọi script/CLI trong `tools/` dùng **Typer** thay vì `argparse`
-- Typer tự sinh type hint validation, help text, và autocomplete từ function signature — ít boilerplate hơn argparse
+- Mọi script/CLI trong `tools/` dùng **Typer**, không dùng `argparse`.
+- Typer tự sinh validation, help và autocomplete từ signature; ít boilerplate hơn.
 
-## Ưu tiên công cụ hiện đại, miễn phí (2026 stack)
+## Công cụ nền tảng (2026 stack, miễn phí)
 
-| Việc                        | Công cụ khuyến nghị                                                        | Thay thế cho                       |
-| ---------------------------- | ------------------------------------------------------------------------------ | ----------------------------------- |
-| Quản lý dependency         | `uv` (Astral)                                                                | pip, pip-tools, poetry, pyenv       |
-| Lint + format                | `ruff`                                                                       | black, isort, flake8, pyupgrade     |
-| Type checking                | `mypy` hoặc `ty` (beta, nhanh hơn nhưng chưa đủ plugin cho pydantic) | —                                  |
-| Validate dữ liệu           | `pydantic` v2                                                                | dataclass thô, dict validation tay |
-| CLI                          | `typer`                                                                      | argparse                            |
-| Audit dependency (bảo mật) | `pip-audit`                                                                  | —                                  |
+| Việc | Công cụ | Thay cho |
+| --- | --- | --- |
+| Quản lý dependency | `uv` | pip, pip-tools, poetry, pyenv |
+| Lint + format | `ruff` | black, isort, flake8, pyupgrade |
+| Type check | `mypy` (hoặc `ty` beta: nhanh hơn nhưng chưa đủ plugin cho pydantic) | — |
+| Validate dữ liệu | `pydantic` v2 | dataclass thô, dict validation tay |
+| CLI | `typer` | argparse |
+| Audit dependency | `pip-audit` | — |
 
-Bảng trên là công cụ nền tảng, dùng xuyên suốt cả repo — không đổi theo từng bài toán.
+- Bảng trên dùng xuyên suốt repo, không đổi theo từng bài toán.
 
-**Ngoài bảng trên, chọn thư viện/kỹ thuật cho một bài toán cụ thể là quyết định mở theo
-từng bài toán, không có danh sách cố định "luôn dùng X cho Y".** Ưu tiên phương án đo được
-là hiệu quả nhất cho đúng bài toán đó — code ngắn gọn hơn, ít bề mặt lỗi hơn, ít
-round-trip/I/O hơn, dễ test hơn — dựa trên bằng chứng cụ thể (tài liệu chính thức,
-benchmark, so sánh số dòng/độ phức tạp thực tế), không phải thói quen hay "nghe quen tên".
-Đồng thời cân nhắc: (1) cộng đồng lớn dùng trong production 2026, (2) hiệu năng cao nếu có
-lựa chọn tương đương, (3) miễn phí/open-source, (4) tích hợp tốt với stack hiện tại
-(Pydantic, Typer,...). Một lựa chọn tốt cho bài toán này (vd. ingest dữ liệu có cấu trúc
-sẵn) có thể không phải lựa chọn tốt cho bài toán khác nhìn giống nó (vd. truy vấn ngôn ngữ
-tự nhiên trên cùng dữ liệu) — đừng suy diễn một quyết định thành rule chung. Quyết định cụ
-thể kèm lý do so sánh ghi trong `*_spec.md` của package liên quan (mục "Công cụ & công
-nghệ"), không phải ở file quy ước chung này — vì lựa chọn tốt nhất có thể khác nhau giữa
-các bài toán và đổi theo thời gian khi công nghệ mới xuất hiện.
+## Chọn thư viện cho bài toán cụ thể
+
+- Ngoài bảng trên là quyết định mở theo từng bài toán; không có danh sách cố định "luôn dùng X cho Y".
+- Ưu tiên phương án đo được là hiệu quả nhất cho đúng bài toán: code ngắn hơn, ít bề mặt lỗi, ít round-trip/I/O, dễ test; dựa trên bằng chứng (tài liệu chính thức, benchmark, số dòng/độ phức tạp thực tế), không dựa thói quen hay "nghe quen tên".
+- Cân nhắc thêm:
+  - cộng đồng lớn, dùng trong production 2026
+  - hiệu năng cao nếu có lựa chọn tương đương
+  - miễn phí/open-source
+  - tích hợp tốt với stack hiện tại (Pydantic, Typer...)
+- Không suy diễn một quyết định thành rule chung: lựa chọn tốt cho bài toán này (vd. ingest dữ liệu có cấu trúc sẵn) có thể không tốt cho bài toán nhìn giống nó (vd. truy vấn ngôn ngữ tự nhiên trên cùng dữ liệu).
+- Quyết định cụ thể kèm lý do so sánh ghi trong `*_spec.md` của package (mục "Công cụ & công nghệ"), không ghi ở file này.
