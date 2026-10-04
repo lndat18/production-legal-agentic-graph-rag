@@ -51,9 +51,11 @@ These are engineering choices applied to Vietnamese legal QA. Their quality impa
 
 ## Architecture
 
-![System architecture overview](docs/architecture.png)
+![Target system architecture](docs/architecture.png)
 
-**Offline ingestion:**
+*Target architecture (planned).* Neo4j knowledge graph, the LangGraph agents (Orchestrator, Searching, Review), MCP, and DeepEval are not implemented yet. The diagrams below describe the current baseline.
+
+**Current baseline, offline ingestion:**
 
 ```mermaid
 flowchart LR
@@ -66,7 +68,7 @@ flowchart LR
     F --> H[Local BM25 parameters]
 ```
 
-**One chat turn:**
+**Current baseline, one chat turn:**
 
 ```mermaid
 flowchart TD

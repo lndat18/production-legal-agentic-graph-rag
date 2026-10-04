@@ -1,7 +1,7 @@
 [project]
 name = "production-legal-agentic-graph-rag"
 version = "0.1.0"
-description = "Add your description here"
+description = "Agentic graph RAG for Vietnamese legal question answering and task execution, with citation verification."
 readme = "README.md"
 authors = [
     { name = "lndat", email = "datdev181104@gmail.com" }
