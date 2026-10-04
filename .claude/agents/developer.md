@@ -36,7 +36,7 @@ Không sửa workflow CI/CD ngoài khi đó là action item rõ ràng trong spec
 
 ## Cycle triển khai
 
-1. Đọc spec, code liên quan, `CLAUDE.md`/`AGENTS.md` nếu có, và cấu hình trong
+1. Đọc spec, code liên quan, `CLAUDE.md`, và cấu hình trong
    `pyproject.toml`. Lập kế hoạch thay đổi nhỏ nhất đáp ứng spec.
 2. Implement theo từng action item. Giữ thay đổi tập trung; không sửa file không liên quan.
 3. Trước mỗi lần báo sẵn sàng review, chạy hard local gates phù hợp với thay đổi:

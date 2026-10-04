@@ -141,8 +141,16 @@ B3, B4 (ledger đếm từ nhãn comment trên PR), B5 (checklist trong `CLAUDE.
 (bỏ câu "không được cấp quyền"), C5, C6, D5, cùng trạng thái spec (`Draft | Approved |
 Implemented`), severity `nit` của reviewer và tester chạy nhanh pytest ở local.
 
+**Phát hiện thêm khi rà lại (đã xử lý):**
+- `main` của repo mới không có branch protection dù `CLAUDE.md` ghi là có → đã bật: bắt buộc PR, check `checks` xanh và `strict`, cấm force-push và xóa branch; admin vẫn bypass được (`enforce_admins=false`).
+- Deny force-push chỉ phủ `--force` đứng ngay sau `git push`/`origin` → đã thêm các biến thể cờ đứng sau, `-f`, `+refspec`, `--delete`, `:branch`.
+- `developer` vẫn route `test-coverage` về mình; `tester` có thể tự lặp push–CI trong một lượt làm lệch số đếm vòng; `unknown` routing mơ hồ → đã sửa.
+- Chưa spec nào có dòng `Trạng thái:` nên `develop-cycle` sẽ từ chối mọi spec baseline → đã thêm `Implemented` vào 11 spec.
+- `CLAUDE.md` mô tả dự án là "Hoàn thành" (trạng thái repo cũ) → đã tách thành "Baseline kế thừa".
+- Cấu hình Codex (`AGENTS.md`, `.agents/`, `.codex/`) bị bỏ hẳn, `.claude/` là nguồn duy nhất.
+- B2 (developer báo gate fail): đã làm rõ, tự sửa trong lượt, chỉ báo blocker khi không sửa được.
+
 **Còn mở:**
-- **B2** developer báo hard gate fail thì dừng: chưa làm rõ có tự sửa và chạy lại không.
 - **C2, C4** chủ ý giữ (tin prompt; người dùng tự khôi phục file).
 - **C5/C6** là best-effort: pattern Bash khớp theo chuỗi nên vẫn có thể bị vòng qua; chưa kiểm chứng bằng lệnh thật.
 - **D1** skill chạy golden testset chưa viết; **D2** marker `integration` chưa khai báo trong

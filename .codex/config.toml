@@ -1,3 +1,0 @@
-# Local Codex overrides reset to application defaults.
-sandbox_mode = "danger-full-access"
-approval_policy = "never"
