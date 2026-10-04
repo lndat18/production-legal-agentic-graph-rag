@@ -162,6 +162,7 @@ Commit message dạng `loại(phạm-vi): mô tả` (conventional commits), comm
 Tag `vX.Y.Z` chỉ gắn trên `main` sau merge, ở mốc phát hành.
 
 **Làm việc không có spec** (chore, docs, đổi tên, cấu hình): làm tay, không dùng `develop-cycle`; chỉ cần CI `checks` xanh rồi người dùng tự merge squash.
+**Fix nhỏ trong `src/`** (nhánh `fix/...`): làm tay, không dùng `develop-cycle`, bắt buộc kèm regression test; áp dụng khi sửa khoảng ≤ 3 file và không đổi contract công khai. Vượt ngưỡng đó hoặc đổi hành vi thì phải có spec (qua `architect` → `develop-cycle`).
 **Sau mỗi lần merge** (người dùng tự làm): `git checkout main && git pull`, `git branch -D <branch>`, đổi `Trạng thái:` của spec liên quan sang `Implemented`, cập nhật mục "Trạng thái dự án" nếu cần. Chỉ gắn tag `vX.Y.Z` ở mốc có thể phát hành, không gắn sau mỗi merge.
 
 ## Lệnh dev

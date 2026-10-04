@@ -150,12 +150,24 @@ Implemented`), severity `nit` của reviewer và tester chạy nhanh pytest ở 
 - Cấu hình Codex (`AGENTS.md`, `.agents/`, `.codex/`) bị bỏ hẳn, `.claude/` là nguồn duy nhất.
 - B2 (developer báo gate fail): đã làm rõ, tự sửa trong lượt, chỉ báo blocker khi không sửa được.
 
+**Rà lần 3 (đã xử lý):** repo public đang tắt secret scanning / push protection / Dependabot → đã bật cả ba (đã quét file tracked, không có key); thêm quy ước git (tên branch, commit message, tag) và làn `fix/` cho sửa lỗi nhỏ (≤ 3 file, bắt buộc regression test); sửa spec đang `Implemented` thì đặt lại `Draft`.
+
 **Còn mở:**
 - **C2, C4** chủ ý giữ (tin prompt; người dùng tự khôi phục file).
 - **C5/C6** là best-effort: pattern Bash khớp theo chuỗi nên vẫn có thể bị vòng qua; chưa kiểm chứng bằng lệnh thật.
 - **D1** skill chạy golden testset chưa viết; **D2** marker `integration` chưa khai báo trong
   `pyproject.toml` và job CI Neo4j chưa có (làm khi viết spec graph).
 - **D3** test-first, **D4** trùng tên agent phát triển / agent sản phẩm: chưa quyết.
+
+## Lưu ý về CI (ngoài phạm vi branch này, chưa sửa)
+
+- **E1.** Bước `pip-audit` trong `ci.yml` có `continue-on-error: true` nên không bao giờ làm
+  `checks` đỏ; `reviewer.md` mô tả `checks` gồm pip-audit như một gate thật. Hoặc bỏ
+  `continue-on-error`, hoặc sửa mô tả cho đúng (advisory).
+- **E2.** Bước "Xác định diff" của `ci.yml` thoát mã 128 khi SHA `before` của push không còn
+  tồn tại (xảy ra khi force-push làm lại lịch sử, đã thấy ở lần đẩy commit gốc). Hiện force-push
+  vào `main` đã bị chặn nên rủi ro thấp; sửa bằng cách kiểm tra `git cat-file -e "$BASE^{commit}"`
+  rồi chạy full CI nếu thiếu. Cần một PR riêng đụng `.github/workflows/`.
 
 ## Thứ tự đề xuất khi chốt
 
