@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from production_legal_qa_rag.retrieval.models import RetrievedChunk
-from production_legal_qa_rag.retrieval.relevance import (
+from production_legal_agentic_graph_rag.retrieval.models import RetrievedChunk
+from production_legal_agentic_graph_rag.retrieval.relevance import (
     MIN_RERANK_SCORE,
     is_low_relevance,
 )

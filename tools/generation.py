@@ -14,12 +14,12 @@ from typing import cast
 
 import typer
 
-from production_legal_qa_rag.generation.generator import (
+from production_legal_agentic_graph_rag.generation.generator import (
     AnswerGenerator,
     GeneratedAnswer,
 )
-from production_legal_qa_rag.generation.judge import EvidenceJudge
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.generation.judge import EvidenceJudge
+from production_legal_agentic_graph_rag.generation.models import (
     Citation,
     CitationsEvent,
     DoneEvent,
@@ -33,8 +33,8 @@ from production_legal_qa_rag.generation.models import (
     VerificationIssue,
     WarningEvent,
 )
-from production_legal_qa_rag.generation.pipeline import GenerationPipeline
-from production_legal_qa_rag.retrieval.models import RetrievedChunk
+from production_legal_agentic_graph_rag.generation.pipeline import GenerationPipeline
+from production_legal_agentic_graph_rag.retrieval.models import RetrievedChunk
 
 app = typer.Typer(add_completion=False)
 

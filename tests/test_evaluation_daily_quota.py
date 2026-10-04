@@ -27,12 +27,14 @@ from openai import (
     RateLimitError,
 )
 
-from production_legal_qa_rag.evaluation import groq_round_robin
-from production_legal_qa_rag.evaluation.groq_round_robin import (
+from production_legal_agentic_graph_rag.evaluation import groq_round_robin
+from production_legal_agentic_graph_rag.evaluation.groq_round_robin import (
     DailyQuotaExhaustedError,
     GroqRoundRobinChatModel,
 )
-from production_legal_qa_rag.evaluation.testset_generator import _describe_error
+from production_legal_agentic_graph_rag.evaluation.testset_generator import (
+    _describe_error,
+)
 
 _PER_MINUTE = "Rate limit reached ... on tokens per minute (TPM): Limit 8000"
 

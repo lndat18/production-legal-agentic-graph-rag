@@ -1,7 +1,7 @@
 # Deploy — Chạy toàn bộ chatbot trên máy cá nhân, public qua Cloudflare Tunnel
 
 - Giữ nguyên số mục để không làm hỏng tham chiếu từ code/spec khác; bản đầy đủ ở git history.
-- Spec liên quan: [api_spec.md](../src/production_legal_qa_rag/api/api_spec.md), [conversation_spec.md](../src/production_legal_qa_rag/conversation/conversation_spec.md), [observability_spec.md](../src/production_legal_qa_rag/observability/observability_spec.md).
+- Spec liên quan: [api_spec.md](../src/production_legal_agentic_graph_rag/api/api_spec.md), [conversation_spec.md](../src/production_legal_agentic_graph_rag/conversation/conversation_spec.md), [observability_spec.md](../src/production_legal_agentic_graph_rag/observability/observability_spec.md).
 
 ## 1. Mục tiêu & phạm vi
 
@@ -70,7 +70,7 @@
 - RUN uv dùng --mount=type=cache: đổi dependency không tải lại torch; không prune builder cache tùy tiện.
 - Reranker checkpoint khoảng 1GB tải HF lần đầu, không bake image; hf_cache giữ qua recreate.
 - User không root; BM25 không trong image, mount read-only; thiếu file → lỗi startup rõ.
-- Uvicorn `production_legal_qa_rag.api.app:create_app --factory --host 0.0.0.0 --port 8000 --workers 1`; không migration; admission in-process.
+- Uvicorn `production_legal_agentic_graph_rag.api.app:create_app --factory --host 0.0.0.0 --port 8000 --workers 1`; không migration; admission in-process.
 - dockerignore: .venv/.git/data/tests/.env và mypy/ruff/pytest cache.
 
 ## 7. Biến môi trường & bí mật (`.env` ở repo root, không commit)
@@ -132,7 +132,7 @@ Số mục 1–10 giữ nguyên số; mục này chỉ thêm (mục 6/8 chỉ b�
 
 ### 11.3 Image & tag
 
-- Ảnh: `ghcr.io/lndat18/production-legal-qa-rag` (viết thường bắt buộc).
+- Ảnh: `ghcr.io/lndat18/production-legal-agentic-graph-rag` (viết thường bắt buộc).
 - Matrix 2 biến thể, `fail-fast: false`, build tuần tự hoặc song song đều được (mặc định song song; dọn disk ở từng job):
 
 | Biến thể | `TORCH_VARIANT` | Tag |
@@ -157,7 +157,7 @@ Số mục 1–10 giữ nguyên số; mục này chỉ thêm (mục 6/8 chỉ b�
 - `docker-compose.yml`, service `api`: thêm `image: ${API_IMAGE:-legal-qa-api:local}` cạnh `build:`; không build thì Compose pull `API_IMAGE`, có build thì gắn tên local. Không đổi `args.TORCH_VARIANT: cpu` mặc định.
 - `up.sh`: mặc định giữ nguyên hành vi (dò GPU → build → up). Thêm cờ `--pull <vX.Y.Z>`:
   - Vẫn dò GPU như 4.1 để chọn hậu tố `-cu126` (và ghép `docker-compose.gpu.yml`) hay `-cpu`.
-  - Đặt `API_IMAGE=ghcr.io/lndat18/production-legal-qa-rag:<version>-<variant>` (export trong script, không ghi vào `.env`), **bỏ bước build**, chạy `docker compose pull api` rồi `up -d --no-build`.
+  - Đặt `API_IMAGE=ghcr.io/lndat18/production-legal-agentic-graph-rag:<version>-<variant>` (export trong script, không ghi vào `.env`), **bỏ bước build**, chạy `docker compose pull api` rồi `up -d --no-build`.
   - Version bắt buộc (không mặc định `latest`, vì `latest` chỉ có cpu và sẽ lệch GPU); thiếu/sai định dạng → in usage, exit 1.
   - Phần còn lại (ghép observe, in quick URL) giữ nguyên.
 - Pull thất bại (chưa public/chưa có tag/chưa login) → script dừng với thông báo rõ, KHÔNG tự rơi về build.

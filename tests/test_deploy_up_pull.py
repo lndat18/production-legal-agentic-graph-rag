@@ -97,7 +97,7 @@ def test_up_pull_thanh_cong_khong_build_va_ghim_image(tmp_path: Path) -> None:
     result, calls = _run_up(tmp_path, ["--pull", "v1.2.3"])
 
     assert result.returncode == 0, result.stderr
-    expected = "ghcr.io/lndat18/production-legal-qa-rag:v1.2.3-cpu"
+    expected = "ghcr.io/lndat18/production-legal-agentic-graph-rag:v1.2.3-cpu"
     pull_calls = [c for c in calls if " pull api" in c]
     up_calls = [c for c in calls if " up " in c]
     assert len(pull_calls) == 1 and pull_calls[0].startswith(f"API_IMAGE={expected} ::")

@@ -11,22 +11,27 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from production_legal_qa_rag.config import JudgeSettings
-from production_legal_qa_rag.evaluation.embed_stage import run_embed
-from production_legal_qa_rag.evaluation.generate_stage import run_generate
-from production_legal_qa_rag.evaluation.groq_round_robin import DailyQuotaExhaustedError
-from production_legal_qa_rag.evaluation.hyde_stage import run_hyde
-from production_legal_qa_rag.evaluation.jsonl_store import JsonlStore
-from production_legal_qa_rag.evaluation.key_pool import (
+from production_legal_agentic_graph_rag.config import JudgeSettings
+from production_legal_agentic_graph_rag.evaluation.embed_stage import run_embed
+from production_legal_agentic_graph_rag.evaluation.generate_stage import run_generate
+from production_legal_agentic_graph_rag.evaluation.groq_round_robin import (
+    DailyQuotaExhaustedError,
+)
+from production_legal_agentic_graph_rag.evaluation.hyde_stage import run_hyde
+from production_legal_agentic_graph_rag.evaluation.jsonl_store import JsonlStore
+from production_legal_agentic_graph_rag.evaluation.key_pool import (
     EvalEvidenceJudge,
     EvalRateLimitError,
     GenerationWorker,
     run_key_queue,
 )
-from production_legal_qa_rag.evaluation.models import GoldenTestCase
-from production_legal_qa_rag.evaluation.report import build_report, stage_status
-from production_legal_qa_rag.evaluation.retrieve_stage import run_retrieve
-from production_legal_qa_rag.evaluation.run_models import (
+from production_legal_agentic_graph_rag.evaluation.models import GoldenTestCase
+from production_legal_agentic_graph_rag.evaluation.report import (
+    build_report,
+    stage_status,
+)
+from production_legal_agentic_graph_rag.evaluation.retrieve_stage import run_retrieve
+from production_legal_agentic_graph_rag.evaluation.run_models import (
     AnswerRecord,
     EmbeddingRecord,
     EvalConfig,
@@ -36,16 +41,24 @@ from production_legal_qa_rag.evaluation.run_models import (
     case_id,
     load_testset,
 )
-from production_legal_qa_rag.evaluation.testset_generator import EvalInputError
-from production_legal_qa_rag.generation.generator import GeneratedAnswer
-from production_legal_qa_rag.generation.judge import EvidenceJudge, JudgeError
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.evaluation.testset_generator import (
+    EvalInputError,
+)
+from production_legal_agentic_graph_rag.generation.generator import GeneratedAnswer
+from production_legal_agentic_graph_rag.generation.judge import (
+    EvidenceJudge,
+    JudgeError,
+)
+from production_legal_agentic_graph_rag.generation.models import (
     JudgeIssue,
     JudgeVerdict,
     Usage,
 )
-from production_legal_qa_rag.retrieval.llm_throttle import ThrottleTimeout
-from production_legal_qa_rag.retrieval.models import PrecomputedQuery, RetrievedChunk
+from production_legal_agentic_graph_rag.retrieval.llm_throttle import ThrottleTimeout
+from production_legal_agentic_graph_rag.retrieval.models import (
+    PrecomputedQuery,
+    RetrievedChunk,
+)
 
 
 def make_cases(count: int) -> list[GoldenTestCase]:

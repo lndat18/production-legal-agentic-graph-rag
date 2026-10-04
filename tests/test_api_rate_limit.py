@@ -11,8 +11,8 @@ import logging
 
 import pytest
 
-from production_legal_qa_rag.api.rate_limit import enforce_rate_limit
-from production_legal_qa_rag.api.schemas import ApiError
+from production_legal_agentic_graph_rag.api.rate_limit import enforce_rate_limit
+from production_legal_agentic_graph_rag.api.schemas import ApiError
 
 
 class _FakeRedis:
@@ -99,7 +99,9 @@ def test_different_users_have_independent_counters() -> None:
 
 def test_redis_failure_fails_open(caplog: pytest.LogCaptureFixture) -> None:
     """A dead Redis must never block chat traffic — only log a warning."""
-    caplog.set_level(logging.WARNING, logger="production_legal_qa_rag.api.rate_limit")
+    caplog.set_level(
+        logging.WARNING, logger="production_legal_agentic_graph_rag.api.rate_limit"
+    )
 
     asyncio.run(enforce_rate_limit(_FailingRedis(), "user-1", limit_per_minute=1))
 

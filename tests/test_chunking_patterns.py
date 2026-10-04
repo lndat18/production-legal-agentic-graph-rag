@@ -12,7 +12,7 @@ hiện tại không còn các định nghĩa đó.
 
 from __future__ import annotations
 
-from production_legal_qa_rag.chunking.patterns import (
+from production_legal_agentic_graph_rag.chunking.patterns import (
     RE_BACKMATTER_SEPARATOR,
     RE_CHUONG,
     RE_DIEM,

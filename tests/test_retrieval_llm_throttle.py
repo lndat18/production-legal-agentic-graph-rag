@@ -14,14 +14,14 @@ from typing import Any
 
 import pytest
 
-from production_legal_qa_rag.config import HydeSettings, ThrottleSettings
-from production_legal_qa_rag.retrieval import llm_throttle
-from production_legal_qa_rag.retrieval.hyde import (
+from production_legal_agentic_graph_rag.config import HydeSettings, ThrottleSettings
+from production_legal_agentic_graph_rag.retrieval import llm_throttle
+from production_legal_agentic_graph_rag.retrieval.hyde import (
     HYDE_SYSTEM_PROMPT,
     HYDE_USER_TEMPLATE,
     HydeGenerator,
 )
-from production_legal_qa_rag.retrieval.llm_throttle import (
+from production_legal_agentic_graph_rag.retrieval.llm_throttle import (
     Reservation,
     ThrottleTimeout,
     TokenWindowThrottle,

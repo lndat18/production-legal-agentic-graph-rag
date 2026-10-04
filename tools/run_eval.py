@@ -12,8 +12,10 @@ from typing import Annotated
 import typer
 from pydantic import ValidationError
 
-from production_legal_qa_rag.evaluation.run_models import EvalConfig
-from production_legal_qa_rag.evaluation.testset_generator import EvalInputError
+from production_legal_agentic_graph_rag.evaluation.run_models import EvalConfig
+from production_legal_agentic_graph_rag.evaluation.testset_generator import (
+    EvalInputError,
+)
 
 app = typer.Typer(add_completion=False, no_args_is_help=True)
 Testset = Annotated[Path, typer.Option(help="Golden testset JSON.")]
@@ -71,8 +73,8 @@ def options(
         config=config,
     )
     for name in (
-        "production_legal_qa_rag.retrieval.hyde",
-        "production_legal_qa_rag.retrieval.query_embedder",
+        "production_legal_agentic_graph_rag.retrieval.hyde",
+        "production_legal_agentic_graph_rag.retrieval.query_embedder",
     ):
         logging.getLogger(name).addFilter(_SafeLogFilter())
     logging.getLogger("ragas.executor").setLevel(logging.CRITICAL)
@@ -82,31 +84,45 @@ def _execute(ctx: typer.Context, stage: str) -> None:
     config: EvalConfig = ctx.obj
     try:
         if stage == "hyde":
-            from production_legal_qa_rag.evaluation.hyde_stage import run_hyde
+            from production_legal_agentic_graph_rag.evaluation.hyde_stage import (
+                run_hyde,
+            )
 
             result = asyncio.run(run_hyde(config))
         elif stage == "embed":
-            from production_legal_qa_rag.evaluation.embed_stage import run_embed
+            from production_legal_agentic_graph_rag.evaluation.embed_stage import (
+                run_embed,
+            )
 
             result = asyncio.run(run_embed(config))
         elif stage == "retrieve":
-            from production_legal_qa_rag.evaluation.retrieve_stage import run_retrieve
+            from production_legal_agentic_graph_rag.evaluation.retrieve_stage import (
+                run_retrieve,
+            )
 
             result = asyncio.run(run_retrieve(config))
         elif stage == "generate":
-            from production_legal_qa_rag.evaluation.generate_stage import run_generate
+            from production_legal_agentic_graph_rag.evaluation.generate_stage import (
+                run_generate,
+            )
 
             result = asyncio.run(run_generate(config))
         elif stage.startswith("score-"):
-            from production_legal_qa_rag.evaluation.scoring import run_scoring
+            from production_legal_agentic_graph_rag.evaluation.scoring import (
+                run_scoring,
+            )
 
             result = run_scoring(config, stage.removeprefix("score-"))  # type: ignore[arg-type]
         elif stage == "status":
-            from production_legal_qa_rag.evaluation.report import stage_status
+            from production_legal_agentic_graph_rag.evaluation.report import (
+                stage_status,
+            )
 
             result = stage_status(config)
         else:
-            from production_legal_qa_rag.evaluation.report import write_report
+            from production_legal_agentic_graph_rag.evaluation.report import (
+                write_report,
+            )
 
             report = write_report(config)
             comparison = report["retrieval_comparison"]["overall"]

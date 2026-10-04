@@ -20,12 +20,12 @@ import pytest
 from pydantic import ValidationError
 from typer.testing import CliRunner
 
-from production_legal_qa_rag.evaluation import testset_generator as tg
-from production_legal_qa_rag.evaluation.models import (
+from production_legal_agentic_graph_rag.evaluation import testset_generator as tg
+from production_legal_agentic_graph_rag.evaluation.models import (
     GenerationProgress,
     GoldenTestCase,
 )
-from production_legal_qa_rag.evaluation.unit_splitter import EvalUnit
+from production_legal_agentic_graph_rag.evaluation.unit_splitter import EvalUnit
 
 SINGLE = "single_hop_specific_query_synthesizer"
 ABSTRACT = "multi_hop_abstract_query_synthesizer"
@@ -611,7 +611,7 @@ def _named(names: list[str]) -> list[GoldenTestCase]:
 
 
 def _review_keep(raw: list[GoldenTestCase], kept: set[int]) -> list[dict[str, str]]:
-    from production_legal_qa_rag.evaluation.run_models import case_id
+    from production_legal_agentic_graph_rag.evaluation.run_models import case_id
 
     return [
         {"case_id": case_id(c.user_input), "verdict": "keep" if i in kept else "drop"}

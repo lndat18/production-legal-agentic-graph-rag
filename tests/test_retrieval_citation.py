@@ -7,13 +7,13 @@ import asyncio
 import pytest
 from test_retrieval_pipeline import _build, _meta
 
-from production_legal_qa_rag.retrieval import pipeline as pipeline_module
-from production_legal_qa_rag.retrieval.citation import (
+from production_legal_agentic_graph_rag.retrieval import pipeline as pipeline_module
+from production_legal_agentic_graph_rag.retrieval.citation import (
     CITATION_SPARSE_TOP_K,
     citation_extras,
     extract_citation_numbers,
 )
-from production_legal_qa_rag.retrieval.models import SearchHit
+from production_legal_agentic_graph_rag.retrieval.models import SearchHit
 
 CITED = "Điều 3 khoản 1 quy định gì"
 UNCITED = "người lao động nghỉ phép bao nhiêu ngày"
@@ -244,8 +244,8 @@ def _distinct_union_pipe(hyde: str | None):  # type: ignore[no-untyped-def]
         FakeSparse,
     )
 
-    from production_legal_qa_rag.retrieval.models import SearchHit as Hit
-    from production_legal_qa_rag.retrieval.pipeline import RetrievalPipeline
+    from production_legal_agentic_graph_rag.retrieval.models import SearchHit as Hit
+    from production_legal_agentic_graph_rag.retrieval.pipeline import RetrievalPipeline
 
     class TwoVectorEmbedder(FakeEmbedder):
         async def embed(self, texts: list[str]) -> list[list[float]]:

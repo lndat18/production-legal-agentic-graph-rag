@@ -19,8 +19,8 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from production_legal_qa_rag.evaluation import testset_generator as tg
-from production_legal_qa_rag.evaluation.unit_splitter import (
+from production_legal_agentic_graph_rag.evaluation import testset_generator as tg
+from production_legal_agentic_graph_rag.evaluation.unit_splitter import (
     MAX_UNIT_CHARS,
     MIN_UNIT_CHARS,
     EvalUnit,
@@ -291,11 +291,11 @@ def test_dry_run_khong_keo_ragas_hay_ragas_runner_vao_process(tmp_path: Path):
         "import sys\n"
         "from pathlib import Path\n"
         "import tools.generate_testset\n"
-        "from production_legal_qa_rag.evaluation import testset_generator as tg\n"
+        "from production_legal_agentic_graph_rag.evaluation import testset_generator as tg\n"
         "tg.plan_generation(tg.DEFAULT_MARKDOWN_DIR, Path(sys.argv[1]))\n"
         "loaded = [m for m in sys.modules if m == 'ragas' or m.startswith('ragas.')]\n"
         "assert not loaded, loaded\n"
-        "assert 'production_legal_qa_rag.evaluation.ragas_runner' not in sys.modules\n"
+        "assert 'production_legal_agentic_graph_rag.evaluation.ragas_runner' not in sys.modules\n"
     )
     python_path = os.pathsep.join([str(REPO_ROOT / "src"), str(REPO_ROOT)])
 

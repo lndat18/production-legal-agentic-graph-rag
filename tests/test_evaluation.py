@@ -52,20 +52,28 @@ from ragas.testset.synthesizers.base import BaseSynthesizer, QueryStyle
 from ragas.testset.synthesizers.utils import calculate_split_values
 from ragas.testset.transforms import default_transforms
 
-from production_legal_qa_rag.config import EmbeddingSettings, TestsetGeneratorSettings
-from production_legal_qa_rag.evaluation import ragas_runner, testset_generator
-from production_legal_qa_rag.evaluation.embeddings_adapter import RagasEmbeddingsAdapter
-from production_legal_qa_rag.evaluation.groq_round_robin import (
+from production_legal_agentic_graph_rag.config import (
+    EmbeddingSettings,
+    TestsetGeneratorSettings,
+)
+from production_legal_agentic_graph_rag.evaluation import (
+    ragas_runner,
+    testset_generator,
+)
+from production_legal_agentic_graph_rag.evaluation.embeddings_adapter import (
+    RagasEmbeddingsAdapter,
+)
+from production_legal_agentic_graph_rag.evaluation.groq_round_robin import (
     DailyQuotaExhaustedError,
     GroqRoundRobinChatModel,
 )
-from production_legal_qa_rag.evaluation.models import GoldenTestCase
-from production_legal_qa_rag.evaluation.testset_generator import (
+from production_legal_agentic_graph_rag.evaluation.models import GoldenTestCase
+from production_legal_agentic_graph_rag.evaluation.testset_generator import (
     QuestionQuota,
     UnitGenerationError,
     UnitResult,
 )
-from production_legal_qa_rag.evaluation.unit_splitter import EvalUnit
+from production_legal_agentic_graph_rag.evaluation.unit_splitter import EvalUnit
 
 
 def _settings(**overrides: Any) -> TestsetGeneratorSettings:

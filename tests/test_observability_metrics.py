@@ -16,8 +16,8 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from prometheus_client import REGISTRY
 
-from production_legal_qa_rag.conversation.models import TurnTrace
-from production_legal_qa_rag.observability import metrics
+from production_legal_agentic_graph_rag.conversation.models import TurnTrace
+from production_legal_agentic_graph_rag.observability import metrics
 
 
 def _sample(name: str, labels: dict[str, str] | None = None) -> float:
@@ -85,7 +85,8 @@ def test_record_turn_khong_lam_lan_loi_ra_ngoai_khi_metric_that_bai(
     monkeypatch.setattr(metrics.CHAT_TURNS_TOTAL, "labels", _boom)
 
     caplog.set_level(
-        logging.WARNING, logger="production_legal_qa_rag.observability.metrics"
+        logging.WARNING,
+        logger="production_legal_agentic_graph_rag.observability.metrics",
     )
     metrics.record_turn(
         TurnTrace(

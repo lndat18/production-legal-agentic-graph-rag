@@ -14,27 +14,30 @@ from typing import Any
 
 import pytest
 
-from production_legal_qa_rag.config import ThrottleSettings
-from production_legal_qa_rag.generation.generator import (
+from production_legal_agentic_graph_rag.config import ThrottleSettings
+from production_legal_agentic_graph_rag.generation.generator import (
     AnswerGenerator,
     GeneratedAnswer,
 )
-from production_legal_qa_rag.generation.guardrail import InputGuardrail
-from production_legal_qa_rag.generation.judge import EvidenceJudge, JudgeError
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.generation.guardrail import InputGuardrail
+from production_legal_agentic_graph_rag.generation.judge import (
+    EvidenceJudge,
+    JudgeError,
+)
+from production_legal_agentic_graph_rag.generation.models import (
     Citation,
     GuardrailVerdict,
     JudgeVerdict,
 )
-from production_legal_qa_rag.generation.pipeline import GenerationPipeline
-from production_legal_qa_rag.retrieval.llm_throttle import (
+from production_legal_agentic_graph_rag.generation.pipeline import GenerationPipeline
+from production_legal_agentic_graph_rag.retrieval.llm_throttle import (
     Reservation,
     ThrottleTimeout,
     TokenWindowThrottle,
     _get_bucket_throttle,
     get_throttle,
 )
-from production_legal_qa_rag.retrieval.models import RetrievedChunk
+from production_legal_agentic_graph_rag.retrieval.models import RetrievedChunk
 
 DRAFT = "Được nghỉ 12 ngày [1]."
 

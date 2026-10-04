@@ -109,7 +109,7 @@ The diagram shows the main path; guardrail rejection, clarification, and service
 
 Docker Compose runs the API, OpenWebUI, Redis, PostgreSQL, and Cloudflare Tunnel. PostgreSQL serves OpenWebUI; vectors live in Pinecone. A separate observability stack records traces and metrics.
 
-Design details: [retrieval spec](src/production_legal_qa_rag/retrieval/retrieval_spec.md), [generation spec](src/production_legal_qa_rag/generation/generation_spec.md), [conversation spec](src/production_legal_qa_rag/conversation/conversation_spec.md), and [API spec](src/production_legal_qa_rag/api/api_spec.md).
+Design details: [retrieval spec](src/production_legal_agentic_graph_rag/retrieval/retrieval_spec.md), [generation spec](src/production_legal_agentic_graph_rag/generation/generation_spec.md), [conversation spec](src/production_legal_agentic_graph_rag/conversation/conversation_spec.md), and [API spec](src/production_legal_agentic_graph_rag/api/api_spec.md).
 
 <a id="en-stack"></a>
 
@@ -133,7 +133,7 @@ Design details: [retrieval spec](src/production_legal_qa_rag/retrieval/retrieval
 | Observability         | Self-hosted Langfuse, Prometheus, Grafana                                                                                                               |
 | Evaluation and checks | RAGAS, pytest, Ruff, mypy, GitHub Actions                                                                                                               |
 
-Model defaults and settings are defined in [config.py](src/production_legal_qa_rag/config.py).
+Model defaults and settings are defined in [config.py](src/production_legal_agentic_graph_rag/config.py).
 
 <a id="en-evaluation"></a>
 
@@ -169,7 +169,7 @@ uv run --group eval --no-group production python tools/run_eval.py status --test
 uv run --group eval --no-group production python tools/run_eval.py report --testset data/eval/phase1/golden_testset.json
 ```
 
-See [evaluation_spec.md, section 11](src/production_legal_qa_rag/evaluation/evaluation_spec.md) for stage order, configuration selection, resume rules, and quota handling. These measurements cover retrieval and generation; they do not measure the full conversation, cache, or guardrail path.
+See [evaluation_spec.md, section 11](src/production_legal_agentic_graph_rag/evaluation/evaluation_spec.md) for stage order, configuration selection, resume rules, and quota handling. These measurements cover retrieval and generation; they do not measure the full conversation, cache, or guardrail path.
 
 <a id="en-setup"></a>
 
@@ -188,8 +188,8 @@ Run commands from the repository root.
 **2. Clone and configure**
 
 ```bash
-git clone https://github.com/lndat18/production-legal-qa-rag.git
-cd production-legal-qa-rag
+git clone https://github.com/lndat18/production-legal-agentic-graph-rag.git
+cd production-legal-agentic-graph-rag
 uv sync --frozen
 cp .env.example .env
 ```
@@ -262,7 +262,7 @@ docker run --detach --name legal-qa-dev-redis \
 Set `REDIS_URL=redis://localhost:6379/0` in `.env`, complete the app configuration and indexing steps above, then run:
 
 ```bash
-uv run uvicorn production_legal_qa_rag.api.app:create_app \
+uv run uvicorn production_legal_agentic_graph_rag.api.app:create_app \
   --factory --host 127.0.0.1 --port 8000 --workers 1
 ```
 
@@ -296,7 +296,7 @@ For initial observability setup, fill the `OBS_*` block in `.env` using its comm
 
 Langfuse is the application's turn-trace store. Turns without working tracing are not recovered later; OpenWebUI separately stores chat history. The PostgreSQL backup command covers OpenWebUI, not the observability stack. OpenWebUI settings saved through the Admin Panel can override Compose defaults on later starts.
 
-See the [configuration reference](docs/configuration.md), [deployment spec](deploy/deploy_spec.md), and [observability spec](src/production_legal_qa_rag/observability/observability_spec.md) for details.
+See the [configuration reference](docs/configuration.md), [deployment spec](deploy/deploy_spec.md), and [observability spec](src/production_legal_agentic_graph_rag/observability/observability_spec.md) for details.
 
 <a id="en-roadmap"></a>
 
@@ -382,13 +382,13 @@ The proposed tax-agent sequence is: **salary-tax calculator → document generat
 Main packages, pipeline tools, corpus files, and deployment configuration:
 
 ```text
-production-legal-qa-rag/
+production-legal-agentic-graph-rag/
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml                                   # CI checks
 │       └── release.yml                              # Build + publish api image to GHCR on vX.Y.Z tag
 ├── src/
-│   └── production_legal_qa_rag/
+│   └── production_legal_agentic_graph_rag/
 │       ├── formatting/                              # DOCX → structured Markdown
 │       ├── chunking/                                # Legal structure-aware chunks
 │       ├── embedding/                               # Embeddings and dense index publication
@@ -561,7 +561,7 @@ Sơ đồ thể hiện luồng chính; guardrail chặn, yêu cầu làm rõ ho�
 
 Docker Compose chạy API, OpenWebUI, Redis, PostgreSQL và Cloudflare Tunnel. PostgreSQL phục vụ OpenWebUI; vector lưu trên Pinecone. Stack observability riêng lưu trace và thu metrics.
 
-Thiết kế chi tiết: [retrieval spec](src/production_legal_qa_rag/retrieval/retrieval_spec.md), [generation spec](src/production_legal_qa_rag/generation/generation_spec.md), [conversation spec](src/production_legal_qa_rag/conversation/conversation_spec.md) và [API spec](src/production_legal_qa_rag/api/api_spec.md).
+Thiết kế chi tiết: [retrieval spec](src/production_legal_agentic_graph_rag/retrieval/retrieval_spec.md), [generation spec](src/production_legal_agentic_graph_rag/generation/generation_spec.md), [conversation spec](src/production_legal_agentic_graph_rag/conversation/conversation_spec.md) và [API spec](src/production_legal_agentic_graph_rag/api/api_spec.md).
 
 <a id="vi-stack"></a>
 
@@ -585,7 +585,7 @@ Thiết kế chi tiết: [retrieval spec](src/production_legal_qa_rag/retrieval/
 | Observability             | Langfuse self-host, Prometheus, Grafana                                                                                                                          |
 | Đánh giá và kiểm tra | RAGAS, pytest, Ruff, mypy, GitHub Actions                                                                                                                        |
 
-Model mặc định và các settings nằm trong [config.py](src/production_legal_qa_rag/config.py).
+Model mặc định và các settings nằm trong [config.py](src/production_legal_agentic_graph_rag/config.py).
 
 <a id="vi-evaluation"></a>
 
@@ -621,7 +621,7 @@ uv run --group eval --no-group production python tools/run_eval.py status --test
 uv run --group eval --no-group production python tools/run_eval.py report --testset data/eval/phase1/golden_testset.json
 ```
 
-Xem [evaluation_spec.md, mục 11](src/production_legal_qa_rag/evaluation/evaluation_spec.md) để biết thứ tự stage, chọn cấu hình, quy tắc resume và xử lý quota. Các số đo này đánh giá retrieval và generation; không đo toàn bộ luồng hội thoại, cache hoặc guardrail.
+Xem [evaluation_spec.md, mục 11](src/production_legal_agentic_graph_rag/evaluation/evaluation_spec.md) để biết thứ tự stage, chọn cấu hình, quy tắc resume và xử lý quota. Các số đo này đánh giá retrieval và generation; không đo toàn bộ luồng hội thoại, cache hoặc guardrail.
 
 <a id="vi-setup"></a>
 
@@ -640,8 +640,8 @@ Chạy các lệnh từ repo root.
 **2. Clone và cấu hình**
 
 ```bash
-git clone https://github.com/lndat18/production-legal-qa-rag.git
-cd production-legal-qa-rag
+git clone https://github.com/lndat18/production-legal-agentic-graph-rag.git
+cd production-legal-agentic-graph-rag
 uv sync --frozen
 cp .env.example .env
 ```
@@ -714,7 +714,7 @@ docker run --detach --name legal-qa-dev-redis \
 Đặt `REDIS_URL=redis://localhost:6379/0` trong `.env`, hoàn thành cấu hình app và build indexes ở trên, rồi chạy:
 
 ```bash
-uv run uvicorn production_legal_qa_rag.api.app:create_app \
+uv run uvicorn production_legal_agentic_graph_rag.api.app:create_app \
   --factory --host 127.0.0.1 --port 8000 --workers 1
 ```
 
@@ -748,7 +748,7 @@ Lần đầu thiết lập observability, điền block `OBS_*` trong `.env` the
 
 Langfuse là nơi lưu turn trace của ứng dụng. Những lượt không ghi trace được sẽ không khôi phục lại sau đó; OpenWebUI lưu lịch sử chat riêng. Lệnh backup PostgreSQL chỉ backup OpenWebUI, không backup stack observability. Cấu hình OpenWebUI đã lưu qua Admin Panel có thể đè mặc định trong Compose ở các lần khởi động sau.
 
-Xem [tham chiếu cấu hình](docs/configuration.md), [deploy spec](deploy/deploy_spec.md) và [observability spec](src/production_legal_qa_rag/observability/observability_spec.md) để biết chi tiết.
+Xem [tham chiếu cấu hình](docs/configuration.md), [deploy spec](deploy/deploy_spec.md) và [observability spec](src/production_legal_agentic_graph_rag/observability/observability_spec.md) để biết chi tiết.
 
 <a id="vi-roadmap"></a>
 
@@ -834,13 +834,13 @@ Lộ trình đề xuất cho agent thuế: **calculator thuế tiền lương �
 Các package chính, tools pipeline, dữ liệu corpus và cấu hình triển khai:
 
 ```text
-production-legal-qa-rag/
+production-legal-agentic-graph-rag/
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml                                   # Kiểm tra CI
 │       └── release.yml                              # Build + publish image api lên GHCR khi có tag vX.Y.Z
 ├── src/
-│   └── production_legal_qa_rag/
+│   └── production_legal_agentic_graph_rag/
 │       ├── formatting/                              # DOCX → Markdown có cấu trúc
 │       ├── chunking/                                # Chunk theo cấu trúc pháp lý
 │       ├── embedding/                               # Embedding và publish dense index

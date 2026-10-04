@@ -13,9 +13,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from production_legal_qa_rag.api.auth import ANONYMOUS_USER_ID, authenticate
-from production_legal_qa_rag.api.schemas import ApiError
-from production_legal_qa_rag.config import ApiSettings
+from production_legal_agentic_graph_rag.api.auth import ANONYMOUS_USER_ID, authenticate
+from production_legal_agentic_graph_rag.api.schemas import ApiError
+from production_legal_agentic_graph_rag.config import ApiSettings
 
 _API_KEY = "test-chatbot-api-key"
 

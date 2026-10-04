@@ -11,30 +11,30 @@ from typing import Any
 
 import pytest
 
-from production_legal_qa_rag.cache.keys import (
+from production_legal_agentic_graph_rag.cache.keys import (
     UNKNOWN_CORPUS_VERSION,
     answer_key,
     compute_corpus_version,
     lock_key,
     retrieval_key,
 )
-from production_legal_qa_rag.cache.models import CachedAnswer
-from production_legal_qa_rag.cache.normalize import normalize_query
-from production_legal_qa_rag.cache.singleflight import SingleFlight
-from production_legal_qa_rag.cache.store import (
+from production_legal_agentic_graph_rag.cache.models import CachedAnswer
+from production_legal_agentic_graph_rag.cache.normalize import normalize_query
+from production_legal_agentic_graph_rag.cache.singleflight import SingleFlight
+from production_legal_agentic_graph_rag.cache.store import (
     ANSWER_TTL_SECONDS,
     RETRIEVAL_TTL_SECONDS,
     AnswerCache,
     RetrievalCache,
 )
-from production_legal_qa_rag.config import CacheSettings, RedisSettings
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.config import CacheSettings, RedisSettings
+from production_legal_agentic_graph_rag.generation.models import (
     Citation,
     CitationsEvent,
     DoneEvent,
     TokenEvent,
 )
-from production_legal_qa_rag.retrieval.models import RetrievedChunk
+from production_legal_agentic_graph_rag.retrieval.models import RetrievedChunk
 
 
 class _MemoryRedis:
@@ -224,7 +224,9 @@ def test_replay_giu_nguyen_text_va_chi_phat_event_cache(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     async def scenario() -> tuple[list[Any], list[float]]:
-        replay_module = importlib.import_module("production_legal_qa_rag.cache.replay")
+        replay_module = importlib.import_module(
+            "production_legal_agentic_graph_rag.cache.replay"
+        )
         pauses: list[float] = []
 
         async def fake_sleep(seconds: float) -> None:

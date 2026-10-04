@@ -31,7 +31,9 @@ def _clear_throttle_buckets() -> None:
     trả giá đó cho các test không đụng tới retrieval. Module chưa nạp thì cache chưa
     có gì để xoá.
     """
-    module = sys.modules.get("production_legal_qa_rag.retrieval.llm_throttle")
+    module = sys.modules.get(
+        "production_legal_agentic_graph_rag.retrieval.llm_throttle"
+    )
     if module is None:
         return
     # Test có thể đang thay `_get_bucket_throttle` bằng spy (monkeypatch chỉ hoàn tác
@@ -61,7 +63,7 @@ def reset_llm_throttle_buckets(monkeypatch: pytest.MonkeyPatch) -> Iterator[None
 
 def _reset_langfuse_client() -> None:
     """Xoá singleton Langfuse client nếu `observability/tracing` đã được nạp."""
-    module = sys.modules.get("production_legal_qa_rag.observability.tracing")
+    module = sys.modules.get("production_legal_agentic_graph_rag.observability.tracing")
     if module is not None:
         module._client = None
 
@@ -75,7 +77,7 @@ def langfuse_disabled_by_default(monkeypatch: pytest.MonkeyPatch) -> Iterator[No
     gửi trace. Fixture tắt việc đọc `.env`, xoá khoá khỏi môi trường và reset singleton
     trước/sau mỗi test (observability_spec.md mục 4.1: thiếu khoá -> no-op).
     """
-    from production_legal_qa_rag.config import LangfuseSettings
+    from production_legal_agentic_graph_rag.config import LangfuseSettings
 
     monkeypatch.setattr(
         LangfuseSettings,
@@ -106,7 +108,7 @@ def in_memory_langfuse(monkeypatch: pytest.MonkeyPatch) -> Iterator[Langfuse]:
         InMemorySpanExporter,
     )
 
-    from production_legal_qa_rag.observability import tracing
+    from production_legal_agentic_graph_rag.observability import tracing
 
     for name in (
         "LANGFUSE_HOST",
@@ -165,7 +167,9 @@ def observation_parent_id() -> Callable[[Any], str | None]:
 @pytest.fixture
 def eval_throttle_factory() -> Callable[..., Any]:
     """Use real token/RPM reservations with per-bucket virtual monotonic clocks."""
-    from production_legal_qa_rag.retrieval.llm_throttle import TokenWindowThrottle
+    from production_legal_agentic_graph_rag.retrieval.llm_throttle import (
+        TokenWindowThrottle,
+    )
 
     buckets: dict[tuple[str, str], TokenWindowThrottle] = {}
 
@@ -199,7 +203,7 @@ def legacy_eval_router_virtual_time(
     }
     if request.module.__name__.split(".")[-1] not in modules:
         return
-    from production_legal_qa_rag.evaluation.groq_round_robin import (
+    from production_legal_agentic_graph_rag.evaluation.groq_round_robin import (
         GroqRoundRobinChatModel,
     )
 

@@ -16,7 +16,10 @@ from enum import Enum
 
 import typer
 
-from production_legal_qa_rag.retrieval.pipeline import FINAL_TOP_K, RetrievalPipeline
+from production_legal_agentic_graph_rag.retrieval.pipeline import (
+    FINAL_TOP_K,
+    RetrievalPipeline,
+)
 
 app = typer.Typer(
     help="Chạy thử retrieve(query) trên corpus/index thật để kiểm chứng reranker.",

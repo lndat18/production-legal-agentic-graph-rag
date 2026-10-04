@@ -58,4 +58,4 @@ EXPOSE 8000
 
 # Chỉ 1 worker/1 container (admission in-process).
 # `exec` để uvicorn nhận SIGTERM từ `docker stop`.
-CMD ["sh", "-c", "exec uvicorn production_legal_qa_rag.api.app:create_app --factory --host 0.0.0.0 --port 8000 --workers 1"]
+CMD ["sh", "-c", "exec uvicorn production_legal_agentic_graph_rag.api.app:create_app --factory --host 0.0.0.0 --port 8000 --workers 1"]

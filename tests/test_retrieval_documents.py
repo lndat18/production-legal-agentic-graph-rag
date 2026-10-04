@@ -10,9 +10,12 @@ from typing import Any
 import pytest
 from test_retrieval_structural import _pipe
 
-from production_legal_qa_rag.retrieval import citation
-from production_legal_qa_rag.retrieval.bm25 import BM25_PARAMS_VERSION, BM25Encoder
-from production_legal_qa_rag.retrieval.citation import (
+from production_legal_agentic_graph_rag.retrieval import citation
+from production_legal_agentic_graph_rag.retrieval.bm25 import (
+    BM25_PARAMS_VERSION,
+    BM25Encoder,
+)
+from production_legal_agentic_graph_rag.retrieval.citation import (
     DOCUMENTS,
     breadcrumb_structural_terms,
     detect_document,
@@ -251,7 +254,7 @@ def test_params_version_hien_tai_la_3():
 def test_ghim_da_go_khong_con_api_hay_hang_so():
     assert not hasattr(citation, "pin_exact_matches")
     assert not hasattr(citation, "PIN_PER_ARTICLE")
-    from production_legal_qa_rag.retrieval import pipeline
+    from production_legal_agentic_graph_rag.retrieval import pipeline
 
     assert not hasattr(pipeline, "pin_exact_matches")
 
@@ -264,7 +267,7 @@ def test_build_index_canh_bao_source_document_la(
     caplog: pytest.LogCaptureFixture,
     monkeypatch: pytest.MonkeyPatch,
 ):
-    from production_legal_qa_rag.retrieval import sparse_index
+    from production_legal_agentic_graph_rag.retrieval import sparse_index
 
     chunks = [
         {
@@ -290,7 +293,7 @@ def test_build_index_canh_bao_source_document_la(
         (),
         {"list_indexes": lambda self: ["sparse"], "Index": lambda self, n: index},
     )()
-    from production_legal_qa_rag.config import VectorDBSettings
+    from production_legal_agentic_graph_rag.config import VectorDBSettings
 
     for k, v in {
         "PINECONE_API_KEY": "p",

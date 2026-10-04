@@ -14,12 +14,15 @@ from collections.abc import AsyncIterator
 
 import pytest
 
-from production_legal_qa_rag.api.openai_format import build_completion, sse_stream
-from production_legal_qa_rag.conversation.history import (
+from production_legal_agentic_graph_rag.api.openai_format import (
+    build_completion,
+    sse_stream,
+)
+from production_legal_agentic_graph_rag.conversation.history import (
     DATA_SNAPSHOT_DISCLAIMER,
     SOURCES_FOOTER_MARKER,
 )
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.generation.models import (
     Citation,
     CitationsEvent,
     DoneEvent,

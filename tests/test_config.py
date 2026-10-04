@@ -1,4 +1,4 @@
-"""Data/Schema validation cho `production_legal_qa_rag/config.py` (chunking_spec.md mục 7).
+"""Data/Schema validation cho `production_legal_agentic_graph_rag/config.py` (chunking_spec.md mục 7).
 
 Dùng `monkeypatch.setenv`/`delenv` để không phụ thuộc nội dung thật của
 `.env` trong repo (biến môi trường luôn ưu tiên hơn `.env` với
@@ -13,7 +13,7 @@ import pytest
 from pydantic import ValidationError
 from pydantic_settings import BaseSettings
 
-from production_legal_qa_rag.config import (
+from production_legal_agentic_graph_rag.config import (
     CondenseSettings,
     EmbeddingSettings,
     GenerationSettings,

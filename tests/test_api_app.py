@@ -19,14 +19,14 @@ from typing import Any
 import pytest
 from fastapi import FastAPI
 
-import production_legal_qa_rag.api.app as app_module
-from production_legal_qa_rag.config import (
+import production_legal_agentic_graph_rag.api.app as app_module
+from production_legal_agentic_graph_rag.config import (
     ApiSettings,
     CacheSettings,
     GenerationSettings,
 )
-from production_legal_qa_rag.generation.generator import PROMPT_VERSION
-from production_legal_qa_rag.observability.turn_trace import RuntimeVersions
+from production_legal_agentic_graph_rag.generation.generator import PROMPT_VERSION
+from production_legal_agentic_graph_rag.observability.turn_trace import RuntimeVersions
 
 
 class _FakeRedis:
