@@ -7,8 +7,8 @@ Agentic Graph RAG hỏi-đáp pháp luật Việt Nam, thiết kế theo hướn
 vẹn từ `production-legal-qa-rag` (lịch sử git làm lại từ đầu). Hướng phát triển: dùng
 knowledge graph (Neo4j) và agent (LangGraph) để giải bài toán retrieval phức tạp hơn; kiến
 trúc đích ở `docs/architecture.png`, README mục "RAG vs. Agentic Graph RAG". Mọi thứ về
-graph/agent là kế hoạch, chưa được triển khai. Mục "Baseline kế thừa" bên dưới mô tả **baseline kế
-thừa**, không phải tiến độ của dự án này.
+graph/agent là kế hoạch, chưa được triển khai. Mục "Baseline kế thừa" bên dưới là lịch sử của hệ
+thống RAG gốc, không phải tiến độ của dự án này.
 
 ## Cấu trúc thư mục
 
@@ -21,7 +21,7 @@ models/                        Model tải local, vd. vietnamese-reranker (chạ
 deploy/                        Docker compose production (chỉ phục vụ end-user) + docs (deploy/deploy_spec.md), up.sh/down.sh/backup.sh/reset_cache.sh; không phải code import được
 observability/                 Langfuse/Prometheus/Grafana compose (chạy cạnh production để quan sát end-user) — tách khỏi deploy/ (2026-09-29) vì không phục vụ end-user
 docs/                          Tài liệu tổng quan hệ thống (luồng xử lý 1 câu hỏi, kiến trúc)
-.claude/                       Cấu hình Claude Code cho project: agents/, skills/, settings.json
+.claude/                       Cấu hình Claude Code cho project: agents/, skills/, settings.json, agent_problems.md (vấn đề + quyết định của quy trình)
 ```
 
 Mỗi package trong `src/production_legal_agentic_graph_rag/` có một `<package>_spec.md` nằm ngay
@@ -134,7 +134,7 @@ Project có agent/skill riêng cho vòng đời spec → implement → test → 
 
 | Agent         | Vai trò                                                                                                                                                                                                            |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `architect` | (Opus 5.5) Brainstorm và chốt`*_spec.md` cùng người dùng trước khi implement (logic/workflow lẫn lựa chọn công nghệ); đặt `Trạng thái: Draft`, người dùng chuyển `Approved` |
+| `architect` | (Opus 5.5) Brainstorm và chốt`*_spec.md` cùng người dùng trước khi implement (logic/workflow lẫn lựa chọn công nghệ); đặt `Trạng thái: Draft`, khi người dùng xác nhận thì ghi `Approved (ngày)` |
 | `developer` | Sở hữu `src/`: implement code từ spec đã chốt; chỉ commit local, không push/mở PR                                                                                                                            |
 | `tester`    | Sở hữu `tests/`: viết Unit/Integration/Data-schema test theo spec, chạy nhanh các file test vừa sửa trước khi push; đảm nhiệm push + mở PR để CI chạy, tổng hợp feedback                                     |
 | `reviewer`  | Review kiến trúc/logic/security/scalability đối chiếu spec + skill`coding-convention`; chạy local sau khi CI pass, PASS thì comment kết luận lên PR — không tự merge, người dùng merge thủ công |
@@ -144,7 +144,8 @@ sở hữu: lỗi `src/` về `developer`, lỗi `tests/` và finding `test-cove
 Danh sách vấn đề và quyết định của quy trình: `.claude/agent_problems.md`.
 
 Skill `develop-cycle` (`.claude/skills/develop-cycle/`) chạy trọn vòng lặp
-developer → tester → reviewer cho một spec cụ thể (`argument-hint: <đường dẫn spec.md> <tên branch>`). Skill `coding-convention` (`.claude/skills/coding-convention/`) là quy ước
+developer → tester → reviewer cho một spec cụ thể (`argument-hint: <đường dẫn spec.md> <tên branch>`).
+Điều kiện gọi: spec đã commit và có `Trạng thái: Approved`, branch do người dùng tạo và đang checkout, worktree sạch. Skill `coding-convention` (`.claude/skills/coding-convention/`) là quy ước
 coding chuẩn production dùng chung (kiến trúc thư mục, naming, format, docstring, công cụ
 pydantic/typer/ruff) — `reviewer` đối chiếu theo skill này.
 
@@ -152,7 +153,7 @@ pydantic/typer/ruff) — `reviewer` đối chiếu theo skill này.
 pr view/list/diff/checks, grep/rg/find/cat/ls...) và deny các thao tác phá hoại
 (`push --force`, `reset --hard`, `git clean`, `git branch -D`, `rm`, `find -delete/-exec`, đọc `.env`, ...). `develop-cycle` **chỉ người dùng gọi được**, Claude không tự gọi; chỉ `tester` push/mở PR.
 
-**Lưu ý vận hành git/CI:** `main` bảo vệ, bắt buộc check `checks` xanh (`strict`) — **không dùng `[skip ci]`** (check treo pending, không merge được). CI chạy đủ khi diff **cả PR** đụng `src/`, `tests/`,
+**Lưu ý vận hành git/CI:** `main` bảo vệ (bật 2026-10-04): bắt buộc PR, check `checks` xanh (`strict`), cấm force-push/xoá; admin bypass được — **không dùng `[skip ci]`** (check treo pending, không merge được). CI chạy đủ khi diff **cả PR** đụng `src/`, `tests/`,
 `tools/`, `pyproject.toml`, `uv.lock`, `.github/workflows/` (spec `.md` dưới `src/` cũng tính). Merge squash nên xoá branch cũ phải `git branch -D` (không phải `-d`) — agent bị deny lệnh này, **người dùng tự chạy**; `git checkout main` khi còn sửa chưa commit
 ở file mà `main` có bản khác sẽ bị chặn → `git stash` trước.
 
