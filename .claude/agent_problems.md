@@ -136,9 +136,18 @@ cần suy luận sâu nhất; có thể cân nhắc model mạnh hơn cho hai va
 | D2 | Phương án kết hợp: unit test dùng fake qua interface mỏng (vd. `GraphStore`); integration test (marker `integration`) chạy Neo4j thật ở job CI riêng khi diff đụng package graph, ban đầu chưa bắt buộc. Chốt chi tiết trong spec graph. Cần có người chịu trách nhiệm chạy integration trước khi merge, tránh lặp bài học "CI xanh chưa đủ". |
 | D5 | `architect`: Opus 5.5, effort medium. `developer`, `tester`, `reviewer`: Sonnet 5.5, effort medium. Khi sửa file, tra tài liệu để xác nhận cách khai báo effort trong frontmatter. |
 
-**Chưa chốt:** a) trạng thái spec (`Draft | Approved | Implemented`); b) lưu ledger vòng lặp
-bằng comment gắn nhãn trên PR; c) checklist sau merge trong `CLAUDE.md`; d) severity `nit`
-không chặn của reviewer; C5, C6 (siết quyền Bash); A4, A5, B2, B4, B5, D3, D4.
+**Đã áp dụng vào file (2026-10-04, branch `chore/agent-working`):** A1, A2, A3, A4, A5, B1,
+B3, B4 (ledger đếm từ nhãn comment trên PR), B5 (checklist trong `CLAUDE.md`), C1, C3
+(bỏ câu "không được cấp quyền"), C5, C6, D5, cùng trạng thái spec (`Draft | Approved |
+Implemented`), severity `nit` của reviewer và tester chạy nhanh pytest ở local.
+
+**Còn mở:**
+- **B2** developer báo hard gate fail thì dừng: chưa làm rõ có tự sửa và chạy lại không.
+- **C2, C4** chủ ý giữ (tin prompt; người dùng tự khôi phục file).
+- **C5/C6** là best-effort: pattern Bash khớp theo chuỗi nên vẫn có thể bị vòng qua; chưa kiểm chứng bằng lệnh thật.
+- **D1** skill chạy golden testset chưa viết; **D2** marker `integration` chưa khai báo trong
+  `pyproject.toml` và job CI Neo4j chưa có (làm khi viết spec graph).
+- **D3** test-first, **D4** trùng tên agent phát triển / agent sản phẩm: chưa quyết.
 
 ## Thứ tự đề xuất khi chốt
 
