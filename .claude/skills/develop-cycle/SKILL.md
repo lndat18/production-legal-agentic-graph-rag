@@ -5,21 +5,27 @@ argument-hint: <đường dẫn spec.md> <tên branch>
 disable-model-invocation: true
 ---
 Bạn là orchestrator cho quy trình implement code từ spec. Input là `$ARGUMENTS`, gồm
-chính xác hai phần: đường dẫn spec và tên branch (nếu chưa có branch thì tạo branch). Giả
-định spec đã được chốt cùng agent `architect` trước khi command này chạy.
+chính xác hai phần: đường dẫn spec và tên branch. Người dùng đã tự tạo branch và commit
+spec (đã chốt cùng agent `architect`) trước khi gọi command này; orchestrator không tạo
+branch và không commit spec.
 
 ## Preflight
 
 1. Tách và xác nhận spec path cùng branch name; cho phép bọc spec path trong dấu ngoặc
    kép nếu đường dẫn có khoảng trắng. Nếu thiếu, dư hoặc không thể tách an toàn hai tham
    số, dừng và yêu cầu người dùng gọi lại theo dạng `/develop-cycle <spec-path> <branch>`.
-2. Xác nhận spec tồn tại, branch tồn tại hoặc có thể được tạo an toàn từ `main`, và
-   worktree không có thay đổi ngoài phạm vi task. Không tự đổi branch hoặc cất/loại bỏ
-   thay đổi của người dùng khi worktree bẩn; dừng và báo rõ blocker.
+2. Xác nhận spec tồn tại, đã được commit, dòng `Trạng thái:` của spec là `Approved`, branch
+   đã tồn tại và đang được checkout, và worktree không có thay đổi ngoài phạm vi task. Thiếu
+   một điều kiện nào thì dừng và báo rõ blocker. Không tự đổi branch hoặc cất/loại bỏ thay
+   đổi của người dùng khi worktree bẩn.
 3. Xác nhận các subagent `developer`, `tester`, `reviewer` đều có sẵn. Xác nhận GitHub CLI
    đã đăng nhập trước khi giao phần việc cần remote GitHub cho tester/reviewer.
-4. Lập state ledger ngay trong hội thoại gồm: spec path, branch, PR (ban đầu chưa có),
-   `ci_feedback_count = 0`, `design_feedback_count = 0`, SHA mới nhất và feedback tích lũy.
+4. Lập state ledger gồm: spec path, branch, PR (ban đầu chưa có), `ci_feedback_count`,
+   `design_feedback_count`, SHA mới nhất và feedback tích lũy. Nguồn sự thật của hai biến đếm
+   là lịch sử PR, không phải hội thoại: đếm số comment mở đầu bằng `[ci-feedback]`
+   (tester, `CHECKS_FAIL`) và `[design-feedback] REVISE` (reviewer) bằng
+   `gh pr view <PR> --comments`. Chưa có PR thì cả hai bằng 0. Tính lại khi bắt đầu và sau
+   mỗi lượt subagent, nên `/clear` hay chạy lại command không làm mất số đếm.
    Gọi các subagent tuần tự (foreground); không chạy song song các subagent có thể ghi vào
    cùng branch.
 
@@ -28,8 +34,9 @@ chính xác hai phần: đường dẫn spec và tên branch (nếu chưa có br
 - Mỗi subagent (`developer`/`tester`/`reviewer`) KHÔNG có tool gọi subagent khác — mỗi lần
   được gọi chỉ làm đúng phần việc của lượt đó rồi trả handoff và dừng ngay, không tự chờ,
   không tự đọc phản hồi hay tự "chuyển sang" subagent kế tiếp. Toàn bộ trình tự gọi và relay
-  feedback giữa các subagent (đặc biệt feedback reviewer `REVISE` → developer) là việc của
-  orchestrator, không phải của agent con.
+  feedback giữa các subagent là việc của orchestrator, không phải của agent con. Feedback
+  được phân luồng theo người sở hữu lỗi: lỗi trong `src/` về `developer`; lỗi trong `tests/`
+  và finding `test-coverage` về `tester`.
 - Chỉ `tester` được push hoặc mở PR. KHÔNG agent nào (kể cả `reviewer`) được merge — merge
   vào `main` luôn do người dùng tự thực hiện thủ công sau khi `reviewer` PASS. Orchestrator
   tuyệt đối không tự `git push`, `gh pr create` hay `gh pr merge`.
@@ -83,8 +90,11 @@ Tester phải viết/cập nhật test trong phạm vi `tests/`, push branch và
 ledger chưa có PR. Tester theo dõi `checks` bằng GitHub CLI và trả về một trong ba trạng
 thái:
 
-- `CHECKS_FAIL`: tăng `ci_feedback_count`. Nếu biến đếm vẫn nhỏ hơn 3, thêm feedback CI vào
-  ledger rồi quay lại bước 1. Nếu đã là 3, dừng theo quy tắc điều phối.
+- `CHECKS_FAIL` (kèm phân loại `source` / `test` / `unknown` của tester): tăng
+  `ci_feedback_count`. Nếu đã là 3, dừng theo quy tắc điều phối. Nếu còn nhỏ hơn 3, thêm
+  feedback CI vào ledger rồi: `test` → gọi lại tester (lặp bước 2, không qua developer);
+  `source` → quay lại bước 1; `unknown` → quay lại bước 1 kèm cả hai giả thuyết, và đã tăng
+  biến đếm thì không gọi tester trước developer.
 - `CHECKS_PASS`: lưu PR và SHA đã push, sau đó sang bước 3.
 - `BLOCKED`: dừng ngay, nêu nguyên nhân và trạng thái PR/branch.
 
@@ -98,10 +108,12 @@ phải tự xác nhận `checks` PASS, lấy PR diff chính thức, post feedbac
 trả về một trong ba trạng thái:
 
 - `REVISE`: tăng `design_feedback_count`. Nếu biến đếm vẫn nhỏ hơn 3, đọc chính feedback
-  reviewer trên PR, thêm vào ledger rồi quay lại bước 1. Lần lặp kế tiếp bắt buộc lại bước 2
-  để tester bổ sung test và CI chạy lại trước review lần sau. Nếu đã là 3, dừng theo quy tắc
-  điều phối.
-- `PASS`: reviewer đã post comment PASS lên PR và KHÔNG merge. Kết thúc vòng lặp — không gọi
+  reviewer trên PR, thêm vào ledger rồi phân luồng theo người sở hữu: finding về `src/` →
+  bước 1 (developer) rồi bước 2; chỉ có finding `test-coverage` → thẳng bước 2 (tester), bỏ
+  qua developer; có cả hai → developer trước, tester sau. Mọi lần lặp đều phải qua bước 2 để
+  CI chạy lại trước review lần sau. Nếu đã là 3, dừng theo quy tắc điều phối.
+- `PASS`: reviewer đã post comment PASS lên PR (có thể kèm các `nit` không chặn) và KHÔNG
+  merge. Kết thúc vòng lặp — không gọi
   thêm subagent nào, chuyển sang phần "Kết quả cuối".
 - `BLOCKED`: dừng ngay, nêu nguyên nhân và trạng thái PR/branch.
 
@@ -109,6 +121,6 @@ trả về một trong ba trạng thái:
 
 Khi kết thúc, báo ngắn gọn: spec, branch, PR, SHA cuối, `ci_feedback_count` và
 `design_feedback_count`, trạng thái `checks`, kết luận reviewer. Nếu reviewer PASS: nêu rõ
-PR đang chờ merge thủ công, kèm lệnh gợi ý `gh pr merge <PR> --squash --delete-branch` để
+PR đang chờ merge thủ công (nêu các `nit` nếu có để người dùng tự quyết), kèm lệnh gợi ý `gh pr merge <PR> --squash --delete-branch` để
 người dùng tự chạy. Nếu dừng vì chạm ngưỡng một trong hai biến đếm hoặc vì `BLOCKED`, liệt
 kê feedback còn lại theo đúng định dạng file/dòng/loại/mô tả để người dùng can thiệp.
