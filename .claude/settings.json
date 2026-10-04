@@ -79,12 +79,6 @@
       "Read(.env)",
       "Read(.env.local)",
       "Read(.env.production)",
-      "Bash(cat .env)",
-      "Bash(cat .env.local)",
-      "Bash(cat .env.production)",
-      "Bash(cat ./.env*)",
-      "Bash(head .env*)",
-      "Bash(tail .env*)",
       "Bash(grep * .env)",
       "Bash(source .env*)",
       "Bash(. .env*)"

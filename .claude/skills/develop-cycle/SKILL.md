@@ -2,16 +2,18 @@
 name: develop-cycle
 description: Chạy vòng lặp developer → tester → reviewer cho một spec cụ thể
 argument-hint: <đường dẫn spec.md> <tên branch>
+arguments: [spec, branch]
 disable-model-invocation: true
 ---
 # Develop cycle (orchestrator)
 
-- Vai trò: orchestrator của quy trình implement code từ spec; input `$ARGUMENTS` gồm đúng hai phần: đường dẫn spec và tên branch.
+- Vai trò: orchestrator của quy trình implement code từ spec.
+- Tham số: `$spec` = đường dẫn spec, `$branch` = tên branch. Đường dẫn có khoảng trắng: người dùng bọc trong ngoặc kép khi gọi.
 - Người dùng đã tự tạo branch và commit spec (đã chốt với `architect`) trước khi gọi; orchestrator không tạo branch, không commit spec.
 
 ## Preflight
 
-- Tách và xác nhận spec path + branch (cho phép bọc spec path trong dấu ngoặc kép nếu có khoảng trắng). Thiếu, dư hoặc không tách an toàn: dừng, yêu cầu gọi lại `/develop-cycle <spec-path> <branch>`.
+- Xác nhận `$spec` và `$branch` đều có giá trị (tham số thiếu sẽ rỗng). Thiếu một trong hai: dừng, yêu cầu gọi lại `/develop-cycle <spec-path> <branch>`.
 - Xác nhận đủ điều kiện, thiếu một điều kiện nào thì dừng và báo blocker:
   - spec tồn tại, đã commit, dòng `Trạng thái:` bắt đầu bằng `Approved`
   - branch đã tồn tại và đang checkout
