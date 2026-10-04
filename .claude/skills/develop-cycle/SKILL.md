@@ -14,7 +14,7 @@ branch và không commit spec.
 1. Tách và xác nhận spec path cùng branch name; cho phép bọc spec path trong dấu ngoặc
    kép nếu đường dẫn có khoảng trắng. Nếu thiếu, dư hoặc không thể tách an toàn hai tham
    số, dừng và yêu cầu người dùng gọi lại theo dạng `/develop-cycle <spec-path> <branch>`.
-2. Xác nhận spec tồn tại, đã được commit, dòng `Trạng thái:` của spec là `Approved`, branch
+2. Xác nhận spec tồn tại, đã được commit, dòng `Trạng thái:` của spec bắt đầu bằng `Approved`, branch
    đã tồn tại và đang được checkout, và worktree không có thay đổi ngoài phạm vi task. Thiếu
    một điều kiện nào thì dừng và báo rõ blocker. Không tự đổi branch hoặc cất/loại bỏ thay
    đổi của người dùng khi worktree bẩn.
@@ -24,7 +24,8 @@ branch và không commit spec.
    `design_feedback_count`, SHA mới nhất và feedback tích lũy. Nguồn sự thật của hai biến đếm
    là lịch sử PR, không phải hội thoại: đếm số comment mở đầu bằng `[ci-feedback]`
    (tester, `CHECKS_FAIL`) và `[design-feedback] REVISE` (reviewer) bằng
-   `gh pr view <PR> --comments`. Chưa có PR thì cả hai bằng 0. Tính lại khi bắt đầu và sau
+   `gh pr view <PR> --json comments --jq ...` (vd. đếm nhãn: `gh pr view <PR> --json comments --jq '[.comments[].body | select(startswith("[ci-feedback]"))] | length'`); không dùng
+   `--comments` vì lỗi GraphQL ở `gh` 2.46. Chưa có PR thì cả hai bằng 0. Tính lại khi bắt đầu và sau
    mỗi lượt subagent, nên `/clear` hay chạy lại command không làm mất số đếm. Nếu số đếm
    trong hội thoại lớn hơn số đếm từ PR (vd. subagent quên post nhãn), lấy giá trị lớn hơn.
    Gọi các subagent tuần tự (foreground); không chạy song song các subagent có thể ghi vào

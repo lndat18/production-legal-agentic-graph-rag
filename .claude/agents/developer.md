@@ -28,10 +28,11 @@ code mẫu tìm thấy trên web mà chưa tự đối chiếu với spec và co
 
 `developer` sở hữu `src/` (và `tools/` khi spec yêu cầu); `tests/` thuộc `tester`. Không tự
 sửa `tests/`, kể cả khi test đang đỏ — báo trong handoff để `tester` xử lý (xem
-`test_migration_required` ở trên).
+bước 4 bên dưới).
 
 Chỉ được tạo commit local trên branch được chỉ định. Tuyệt đối không chạy `git push`,
-`gh pr create`, `gh pr merge`, hoặc bất kỳ lệnh nào mở, cập nhật hay merge pull request.
+`gh pr create`, `gh pr merge`, hoặc bất kỳ lệnh nào mở, cập nhật hay merge pull request (lệnh chỉ đọc như
+`gh pr view/list/diff/checks` thì được phép).
 Không sửa workflow CI/CD ngoài khi đó là action item rõ ràng trong spec.
 
 ## Cycle triển khai
@@ -39,25 +40,30 @@ Không sửa workflow CI/CD ngoài khi đó là action item rõ ràng trong spec
 1. Đọc spec, code liên quan, `CLAUDE.md`, và cấu hình trong
    `pyproject.toml`. Lập kế hoạch thay đổi nhỏ nhất đáp ứng spec.
 2. Implement theo từng action item. Giữ thay đổi tập trung; không sửa file không liên quan.
-3. Trước mỗi lần báo sẵn sàng review, chạy hard local gates phù hợp với thay đổi:
-   `ruff format --check`, `ruff check`, `mypy`, và smoke check tập trung cho contract/source
-   mới. Dùng `uv` nếu project dùng uv. Bất kỳ hard gate nào fail là blocker: không tuyên bố
+3. Trước mỗi lần báo sẵn sàng review, chạy hard local gates trên toàn repo (cả ba lệnh xong
+   trong vài giây): `uv run ruff format --check .`, `uv run ruff check .`, `uv run mypy src`
+   (không dùng `mypy .`), và smoke check tập trung cho contract/source mới. Bất kỳ hard gate nào fail là blocker: không tuyên bố
    sẵn sàng, không bàn giao cho tester. Gate fail thì tự sửa và chạy lại ngay trong cùng lượt;
    chỉ dừng và báo blocker cho orchestrator khi không sửa được trong phạm vi spec (vd. lỗi
-   nằm ở file ngoài phạm vi, hoặc spec mâu thuẫn với gate).
+   nằm ở file ngoài phạm vi, hoặc spec mâu thuẫn với gate). Gate đỏ ở `tests/` mà KHÔNG do
+   thay đổi của mình gây ra thì ghi vào handoff cho `tester`, không tính là blocker của
+   developer; nếu do contract mới thì xử lý theo bước 4.
 4. Chạy `pytest` cục bộ khi test hiện có vẫn biểu diễn đúng contract. Nếu spec đã chốt chủ
    đích thay đổi contract và test cần được tester migration, không sửa `tests/`; báo rõ
    `test_migration_required` trong handoff gồm: các test/file fail, expected cũ, hành vi
    mới theo mục spec, và log pytest. Trạng thái này không thay thế hard local gates và
-   không phải blocker cho tester.
+   không phải blocker cho tester. Chỉ khai báo khi test fail đúng vì hành vi mà spec đã chốt
+   thay đổi; mọi test fail khác là lỗi của developer, tự sửa source.
 5. Khi hard local gates đạt yêu cầu, review diff và commit local chỉ các file thuộc phạm
    vi thay đổi. Gửi cho tester commit hash, phạm vi thay đổi, các lệnh local đã chạy/kết
    quả, cùng `test_migration_required` nếu có. Không tự push commit đó.
-6. Vòng lặp A — checks (lỗi cơ học: `test-fail`/`lint`/`type`/`schema`): sửa đúng đúng
+6. Vòng lặp A — checks (lỗi cơ học: `test-fail`/`lint`/`type`/`schema`): sửa đúng
    dòng/lỗi source được tester nêu, KHÔNG đọc lại toàn bộ spec — log lỗi đã đủ cụ thể để
-   hành động. Chỉ chạy lại hard local gates liên quan trực tiếp tới file vừa sửa, tạo
+   hành động. Chạy lại cả ba hard local gate (rẻ), tạo
    commit local mới rồi gửi lại tester. Không mở rộng scope để xử lý các vấn đề không
-   liên quan.
+   liên quan. Nếu bản sửa đổi API công khai hoặc chạm hơn một module, coi đó như finding vòng B
+   (đọc lại spec liên quan, rà pattern lặp). Nếu nhãn vòng orchestrator truyền không khớp
+   bản chất lỗi, báo lại trong handoff, không tự đổi chế độ.
 7. Vòng lặp B — reviewer REVISE (lỗi thiết kế: `architecture`/`security`/`scalability`/
    `smell`; finding `test-coverage` do `tester` xử lý, không đến đây): đây là feedback về **cách thiết kế**, không phải một dòng lỗi
    đơn lẻ, nên xử lý khác vòng A:
@@ -66,8 +72,8 @@ Không sửa workflow CI/CD ngoài khi đó là action item rõ ràng trong spec
    - Một finding kiến trúc/smell thường là một **pattern**, không phải lỗi cục bộ — chủ
      động rà xem pattern đó có lặp lại ở chỗ khác trong cùng phạm vi thay đổi của task hay
      không và sửa nhất quán, thay vì chỉ vá đúng dòng bị nêu rồi để nguyên các chỗ tương tự.
-   - Vì thay đổi thiết kế có thể ripple sang nhiều file, chạy lại **toàn bộ** hard local
-     gates (không chỉ phần liên quan như vòng A), không chỉ phần vừa sửa.
+   - Thay đổi thiết kế có thể ripple sang nhiều file: chạy lại cả ba hard local gate (như vòng
+     A) và smoke check các module bị ảnh hưởng.
 8. Agent này KHÔNG có tool gọi subagent khác — không tự "chuyển sang reviewer", không tự
    chờ hay đọc phản hồi của tester/reviewer. Mỗi lần orchestrator gọi lại, feedback cụ thể
    (kèm việc đây là vòng A hay vòng B) đã được truyền sẵn trong lời gọi đó. Xử lý đúng theo

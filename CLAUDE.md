@@ -161,6 +161,8 @@ pr view/list/diff/checks, grep/rg/find/cat/ls...) và deny các thao tác phá h
 Commit message dạng `loại(phạm-vi): mô tả` (conventional commits), commit do Claude tạo kết thúc bằng dòng `Co-Authored-By`.
 Tag `vX.Y.Z` chỉ gắn trên `main` sau merge, ở mốc phát hành.
 
+**Sau khi sửa `CLAUDE.md` hoặc `.claude/` (agent, skill, settings), mở phiên Claude Code mới** trước khi gọi `develop-cycle`: dry-run cho thấy subagent nhận bản `CLAUDE.md` đã nạp lúc bắt đầu phiên chứ không phải bản mới trên đĩa; định nghĩa agent và quyền cũng có thể chưa được nạp lại.
+
 **Làm việc không có spec** (chore, docs, đổi tên, cấu hình): làm tay, không dùng `develop-cycle`; chỉ cần CI `checks` xanh rồi người dùng tự merge squash.
 **Fix nhỏ trong `src/`** (nhánh `fix/...`): làm tay, không dùng `develop-cycle`, bắt buộc kèm regression test; áp dụng khi sửa khoảng ≤ 3 file và không đổi contract công khai. Vượt ngưỡng đó hoặc đổi hành vi thì phải có spec (qua `architect` → `develop-cycle`).
 **Sau mỗi lần merge** (người dùng tự làm): `git checkout main && git pull`, `git branch -D <branch>`, đổi `Trạng thái:` của spec liên quan sang `Implemented`, cập nhật mục "Trạng thái dự án" nếu cần. Chỉ gắn tag `vX.Y.Z` ở mốc có thể phát hành, không gắn sau mỗi merge.

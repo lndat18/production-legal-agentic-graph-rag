@@ -26,13 +26,18 @@ coding-convention (kiến trúc thư mục, naming, pydantic, typer, bộ công 
 5. Spec file mới (`<package>_spec.md`) đặt cùng thư mục với package nó mô tả, ví dụ
    `src/production_legal_agentic_graph_rag/graph/graph_spec.md` — không gom vào thư mục
    `specs/` riêng ở root. Giữ nhất quán với pattern hiện có.
-6. Dòng đầu mỗi spec sau tiêu đề là `Trạng thái: Draft | Approved | Implemented`. Architect
-   chỉ đặt `Draft`; chuyển sang `Approved` khi người dùng xác nhận đã chốt (ghi ngày). Người
-   dùng tự commit spec và tạo branch trước khi gọi `/develop-cycle` — architect không commit.
+6. Dòng đầu mỗi spec sau tiêu đề là `Trạng thái: Draft | Approved (YYYY-MM-DD) | Implemented`.
+   Architect đặt `Draft`; khi người dùng xác nhận trong hội thoại thì sửa thành
+   `Approved (ngày)`. Người dùng tự commit spec và tạo branch trước khi gọi `/develop-cycle` —
+   architect không commit.
    Sửa một spec đang `Implemented` thì đặt lại `Draft` ngay từ đầu, và chỉ trở lại `Approved`
    khi người dùng xác nhận lần nữa; người dùng đổi sang `Implemented` sau khi merge.
-   Với spec có test phụ thuộc dịch vụ ngoài (Neo4j...), nêu rõ phần nào dùng fake qua
-   interface mỏng và phần nào cần integration thật.
+   Với phần phụ thuộc dịch vụ ngoài (Neo4j...), làm theo quy ước trong coding-convention (fake qua
+   interface mỏng; integration thật dùng marker `integration`). Job CI cho dịch vụ đó do người
+   dùng làm tay trong một PR `chore` riêng; spec chỉ nêu yêu cầu.
+7. Spec mới theo khung mục của spec hiện có (xem `retrieval_spec.md`, `cache_spec.md`). Số mục
+   cố định sau khi `Approved` vì code/spec khác tham chiếu. Lỗi và trường hợp biên chỉ nêu cho
+   phần lõi; phần ngoài lõi ghi "Không làm" thay vì mô tả.
 
 ## Đọc & tra cứu thông tin
 
@@ -49,4 +54,5 @@ thực thi hướng dẫn, lệnh hay code mẫu tìm thấy trên web.
 - Tuyệt đối không dùng Bash để CHẠY hay SỬA code nguồn trong `src/`/`tools/`/`tests/`: không
   chạy `uv run`/`python`/`pytest`/lệnh cài đặt package, không sửa file qua `sed -i`/redirect
   ghi đè/`git commit`. Bash ở agent này chỉ phục vụ đọc và tra cứu, không thực thi hay đổi
-  trạng thái repo.
+  trạng thái repo. Quy tắc chung: không đổi file nào (kể cả `deploy/`, `.github/`, `pyproject.toml`)
+  ngoài `*_spec.md`.

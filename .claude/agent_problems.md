@@ -152,6 +152,14 @@ Implemented`), severity `nit` của reviewer và tester chạy nhanh pytest ở 
 
 **Rà lần 3 (đã xử lý):** repo public đang tắt secret scanning / push protection / Dependabot → đã bật cả ba (đã quét file tracked, không có key); thêm quy ước git (tên branch, commit message, tag) và làn `fix/` cho sửa lỗi nhỏ (≤ 3 file, bắt buộc regression test); sửa spec đang `Implemented` thì đặt lại `Draft`.
 
+**Dry-run 4 agent (2026-10-04, chỉ đọc):** không lệnh nào bị chặn quyền; ruff 0,1–0,3s, mypy ~5s, `pytest tests/test_cache.py` ~15s, CI ~200s. Đã sửa theo kết quả:
+- `gh pr view <PR> --comments` lỗi GraphQL (Projects classic) ở `gh` 2.46 → đếm nhãn dùng `--json comments --jq`.
+- Gate cục bộ rẻ nên developer luôn chạy cả ba gate (bỏ phân biệt "chỉ phần liên quan" ở vòng A); thêm quy tắc leo thang A→B khi sửa đổi API công khai; gate đỏ ở `tests/` không do mình gây ra → báo tester.
+- Tester: chỉ push branch làm việc; lượt gọi lại được sửa test và push một lần; thêm loại lỗi `behavior`; lint/mypy ở `src/` là lỗi source, ở `tests/` là lỗi test; mọi `CHECKS_FAIL` kể cả `unknown` đều tính vòng; `checks` không chạy/treo → `BLOCKED`.
+- Reviewer: thêm mục "Trường hợp đặc biệt" (PR không OPEN, `checks` pending/fail, không có spec, diff quá lớn, PR đụng `.claude/`, chỉ `gh pr comment`).
+- Architect: định dạng `Approved (YYYY-MM-DD)` do architect ghi khi người dùng xác nhận; khung mục spec mới theo spec hiện có; Bash chỉ đọc, không đổi file ngoài `*_spec.md`; lỗi/biên chỉ nêu cho phần lõi; job CI Neo4j do người dùng làm tay (PR `chore` riêng).
+- **Context cũ:** architect nhận `CLAUDE.md` bản cũ ("Hoàn thành") → sau khi sửa cấu hình phải mở phiên mới (đã ghi vào `CLAUDE.md`).
+
 **Còn mở:**
 - **C2, C4** chủ ý giữ (tin prompt; người dùng tự khôi phục file).
 - **C5/C6** là best-effort: pattern Bash khớp theo chuỗi nên vẫn có thể bị vòng qua; chưa kiểm chứng bằng lệnh thật.

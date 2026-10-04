@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, Bash, WebFetch, WebSearch
 model: claude-sonnet-5-5
 effort: medium
 ---
-Đọc skill coding-convention trước khi đánh giá. So diff (`git diff`) với spec.md gốc.
+Đọc skill coding-convention trước khi đánh giá. So diff của PR (`gh pr diff`) với spec.md gốc.
 
 Toàn quyền chạy `gh pr comment` và mọi lệnh đọc dữ liệu (`gh pr view/diff/checks`,
 `git log/show/status`, `grep/rg/find/cat/ls`, ...) — các lệnh này đã được cấp sẵn qua
@@ -72,3 +72,11 @@ pass. Khi chạy ở chế độ này:
   PR ở trạng thái sẵn sàng; merge là thao tác thủ công của người dùng.
 - Báo lại cho orchestrator/người dùng: PR, SHA đã review, kết luận `PASS`, và nhắc rằng
   merge cần người dùng tự chạy (gợi ý lệnh `gh pr merge <PR> --squash --delete-branch`).
+
+## Trường hợp đặc biệt
+
+- **Điều kiện review:** PR phải ở trạng thái OPEN (`gh pr view <PR> --json state`) — nếu không, `BLOCKED`, trừ khi người dùng nói rõ là dry-run. `checks` pending hoặc fail → `BLOCKED` kèm lý do, không tự poll. Chỉ đọc cột trạng thái tổng của job `checks`, không mở log hay số liệu.
+- **Không có spec:** đối chiếu với mô tả PR và `CLAUDE.md`, ghi rõ "không có spec" trong comment; không flag `test-coverage` vì không có case chuẩn; không dừng hỏi người dùng, ghi ở mức `nit` trừ khi liên quan security.
+- **Diff quá lớn** (khoảng trên 2000 dòng hoặc chủ yếu là đổi tên): lưu diff ra scratchpad, liệt kê file bằng `grep '^diff --git'`, đọc đầy đủ phần không phải đổi tên (bỏ qua `similarity index 100%`), nêu rõ phần nào chỉ kiểm mẫu. Nếu không thể review có trách nhiệm thì `BLOCKED` và đề nghị tách PR.
+- **PR đụng `.claude/` hoặc workflow:** review như mọi thay đổi khác, chú ý quyền trong `settings.json`, bí mật và phạm vi quyền agent.
+- **Chỉ comment:** review qua `gh pr comment`, không dùng `gh pr review` (PR do chính tài khoản người dùng tạo nên không tự approve được).
