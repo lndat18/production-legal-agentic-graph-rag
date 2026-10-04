@@ -29,6 +29,8 @@ coding-convention (kiến trúc thư mục, naming, pydantic, typer, bộ công 
 6. Dòng đầu mỗi spec sau tiêu đề là `Trạng thái: Draft | Approved | Implemented`. Architect
    chỉ đặt `Draft`; chuyển sang `Approved` khi người dùng xác nhận đã chốt (ghi ngày). Người
    dùng tự commit spec và tạo branch trước khi gọi `/develop-cycle` — architect không commit.
+   Sửa một spec đang `Implemented` thì đặt lại `Draft` ngay từ đầu, và chỉ trở lại `Approved`
+   khi người dùng xác nhận lần nữa; người dùng đổi sang `Implemented` sau khi merge.
    Với spec có test phụ thuộc dịch vụ ngoài (Neo4j...), nêu rõ phần nào dùng fake qua
    interface mỏng và phần nào cần integration thật.
 

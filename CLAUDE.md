@@ -156,6 +156,11 @@ pr view/list/diff/checks, grep/rg/find/cat/ls...) và deny các thao tác phá h
 `tools/`, `pyproject.toml`, `uv.lock`, `.github/workflows/` (spec `.md` dưới `src/` cũng tính). Merge squash nên xoá branch cũ phải `git branch -D` (không phải `-d`) — agent bị deny lệnh này, **người dùng tự chạy**; `git checkout main` khi còn sửa chưa commit
 ở file mà `main` có bản khác sẽ bị chặn → `git stash` trước.
 
+**Quy ước git:** tên branch `<loại>/<mô-tả-kebab-case>` với loại ∈ `feat`, `fix`, `refactor`, `docs`, `chore`, `test`
+(vd. `chore/agent-working`, `feat/kg-graph-retrieval`); mỗi branch ngắn hạn, tạo từ `main`, mở PR vào `main`, không lồng branch.
+Commit message dạng `loại(phạm-vi): mô tả` (conventional commits), commit do Claude tạo kết thúc bằng dòng `Co-Authored-By`.
+Tag `vX.Y.Z` chỉ gắn trên `main` sau merge, ở mốc phát hành.
+
 **Làm việc không có spec** (chore, docs, đổi tên, cấu hình): làm tay, không dùng `develop-cycle`; chỉ cần CI `checks` xanh rồi người dùng tự merge squash.
 **Sau mỗi lần merge** (người dùng tự làm): `git checkout main && git pull`, `git branch -D <branch>`, đổi `Trạng thái:` của spec liên quan sang `Implemented`, cập nhật mục "Trạng thái dự án" nếu cần. Chỉ gắn tag `vX.Y.Z` ở mốc có thể phát hành, không gắn sau mỗi merge.
 
