@@ -1,5 +1,7 @@
 # Cache — Cache câu trả lời & kết quả retrieval bằng Redis
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục để không làm hỏng tham chiếu từ code/spec khác.
 - Spec liên quan: [generation_spec.md](../generation/generation_spec.md), [conversation_spec.md](../conversation/conversation_spec.md).
 

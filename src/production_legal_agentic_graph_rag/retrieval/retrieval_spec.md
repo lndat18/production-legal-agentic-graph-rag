@@ -1,5 +1,7 @@
 # Retrieval — Legal Question → Evidence Chunks: Reference Spec
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục để không làm hỏng tham chiếu từ code/spec khác.
 - Spec liên quan: [embedding_spec.md](../embedding/embedding_spec.md), [generation_spec.md](../generation/generation_spec.md), [conversation_spec.md](../conversation/conversation_spec.md), [evaluation_spec.md](../evaluation/evaluation_spec.md).
 

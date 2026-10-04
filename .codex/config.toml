@@ -1,3 +1,13 @@
-# Local Codex overrides reset to application defaults.
-sandbox_mode = "danger-full-access"
-approval_policy = "never"
+# Model kế thừa lựa chọn Codex của người dùng.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3
+
+[mcp_servers."context7"]
+url = "https://mcp.context7.com/mcp"
+
+[mcp_servers."hf-mcp-server"]
+url = "https://huggingface.co/mcp"

@@ -1,5 +1,7 @@
 # Deploy — Chạy toàn bộ chatbot trên máy cá nhân, public qua Cloudflare Tunnel
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục để không làm hỏng tham chiếu từ code/spec khác; bản đầy đủ ở git history.
 - Spec liên quan: [api_spec.md](../src/production_legal_agentic_graph_rag/api/api_spec.md), [conversation_spec.md](../src/production_legal_agentic_graph_rag/conversation/conversation_spec.md), [observability_spec.md](../src/production_legal_agentic_graph_rag/observability/observability_spec.md).
 
@@ -113,7 +115,8 @@
 
 ## 11. CD: build + push image lên GHCR (chốt 2026-10-02, đã implement, release `v0.1.0` chạy thật 2026-10-03, hoàn tất)
 
-Số mục 1–10 giữ nguyên số; mục này chỉ thêm (mục 6/8 chỉ bổ sung 1 dòng nhắc mục này). Mục 1 "Không làm: CD tự deploy" vẫn đúng: CD ở đây chỉ **xuất bản image**, máy nhà vẫn cập nhật tay.
+- Số mục 1–10 giữ nguyên số; mục này chỉ thêm (mục 6/8 chỉ bổ sung 1 dòng nhắc mục này).
+- Mục 1 "Không làm: CD tự deploy" vẫn đúng: CD ở đây chỉ **xuất bản image**, máy nhà vẫn cập nhật tay.
 
 ### 11.1 Mục tiêu, phạm vi, KHÔNG làm
 

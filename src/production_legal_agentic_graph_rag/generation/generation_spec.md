@@ -1,5 +1,7 @@
 # Generation — Evidence-verified answer: Reference Spec
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục để không làm hỏng tham chiếu từ code/spec khác.
 - Spec liên quan: [retrieval_spec.md](../retrieval/retrieval_spec.md), [conversation_spec.md](../conversation/conversation_spec.md), [cache_spec.md](../cache/cache_spec.md).
 

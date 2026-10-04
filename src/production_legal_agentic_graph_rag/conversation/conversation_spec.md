@@ -1,5 +1,7 @@
 # Conversation — Multi-turn (condense) → Guardrail → Cache → Admission → Retrieve → Generate
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục, đặc biệt 12.1.
 - Prompt trong code (`CONDENSE_SYSTEM_PROMPT`, `GENERATION_SYSTEM_PROMPT`) là nguồn sự thật; spec mô tả quy tắc.
 - Spec liên quan: [generation_spec.md](../generation/generation_spec.md), [cache_spec.md](../cache/cache_spec.md), [api_spec.md](../api/api_spec.md), [observability_spec.md](../observability/observability_spec.md), [evaluation_spec.md](../evaluation/evaluation_spec.md).

@@ -1,5 +1,7 @@
 # API — FastAPI (OpenAI-compatible) + OpenWebUI + Redis (+ Postgres cho OpenWebUI)
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục để không làm hỏng tham chiếu từ code/spec khác.
 - Spec liên quan: [deploy_spec.md](../../../deploy/deploy_spec.md), [conversation_spec.md](../conversation/conversation_spec.md), [observability_spec.md](../observability/observability_spec.md).
 
