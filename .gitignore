@@ -30,3 +30,7 @@ data/eval/phase2/embeddings.jsonl
 *.out
 
 /resume/
+
+# Claude Code: cấu hình/ghi chú cá nhân (có thể chứa quyền riêng của người dùng)
+.claude/settings.local.json
+CLAUDE.local.md
