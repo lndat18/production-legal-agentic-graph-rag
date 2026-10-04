@@ -11,37 +11,15 @@
 - Mọi thứ về graph/agent mới là kế hoạch, chưa triển khai.
 - Mục "Baseline kế thừa" bên dưới là lịch sử hệ thống RAG gốc, không phải tiến độ của dự án này.
 
-## Cấu trúc thư mục
+## Cấu trúc và spec
 
-- `src/production_legal_agentic_graph_rag/`: toàn bộ source import được, chia package theo nghiệp vụ.
-- `tests/`: test, tên `test_<package>_<phần>.py`.
-- `tools/`: CLI (Typer) chạy từng bước pipeline độc lập, vd. `tools/chunk_documents.py`.
-- `data/`: raw → markdown → chunks → embeddings; `bm25/` cho sparse index.
-- `models/`: model tải local, vd. vietnamese-reranker (chạy in-process, không host tách rời).
-- `deploy/`: Docker compose production (chỉ phục vụ end-user), `deploy_spec.md`, `up.sh`/`down.sh`/`backup.sh`/`reset_cache.sh`; không phải code import được.
-- `observability/`: Langfuse/Prometheus/Grafana compose, chạy cạnh production; tách khỏi `deploy/` (2026-09-29) vì không phục vụ end-user.
-- `docs/`: tài liệu tổng quan (luồng một câu hỏi, kiến trúc, `baseline_history.md`).
-- `.claude/`: cấu hình Claude Code: `agents/`, `skills/`, `settings.json`, `agent_problems.md` (quyết định + vấn đề còn mở của quy trình).
-
-## Spec theo package
-
+- Source import được nằm trong `src/production_legal_agentic_graph_rag/`, một package mỗi nghiệp vụ; pipeline: `formatting → chunking → embedding → retrieval → generation → conversation → cache → api`, kèm `observability/` và `evaluation/`.
 - Mỗi package có `<package>_spec.md` cạnh nó: nguồn sự thật cho thiết kế/quyết định; đọc trước khi sửa code trong package.
-- Spec đã cô đọng (2026-09-30, rút gọn lần 2 2026-10-01; bản đầy đủ ở git history).
-- **Giữ nguyên số mục** vì code/spec khác tham chiếu (`conversation_spec.md` mục 12.1, `observability_spec.md` mục 4.5, `evaluation_spec.md` mục 3.x/4.x…); đổi số mục làm hỏng tham chiếu.
 - Dòng đầu mỗi spec: `Trạng thái: Draft | Approved (YYYY-MM-DD) | Implemented`.
-
-## Package map (theo thứ tự pipeline)
-
-- `formatting/`: `.docx` pháp luật → Markdown có cấu trúc, giữ vị trí pháp lý (Điều/Khoản/Điểm) ([spec](src/production_legal_agentic_graph_rag/formatting/formatting_spec.md)).
-- `chunking/`: Markdown → chunk tự đủ nghĩa, sẵn sàng embedding ([spec](src/production_legal_agentic_graph_rag/chunking/chunking_spec.md)).
-- `embedding/`: chunk → vector, giữ citation cho bước sinh câu trả lời ([spec](src/production_legal_agentic_graph_rag/embedding/embedding_spec.md)).
-- `retrieval/`: câu hỏi → tập `RetrievedChunk` liên quan: HyDE, hybrid, RRF, MMR, rerank local GPU ([spec](src/production_legal_agentic_graph_rag/retrieval/retrieval_spec.md)).
-- `generation/`: `RetrievedChunk` đã rerank → câu trả lời có citation, đã kiểm chứng ([spec](src/production_legal_agentic_graph_rag/generation/generation_spec.md)).
-- `conversation/`: điều phối một lượt: condense → guardrail → cache → admission → retrieve → generate ([spec](src/production_legal_agentic_graph_rag/conversation/conversation_spec.md)).
-- `cache/`: cache câu trả lời và kết quả retrieval bằng Redis, single-flight ([spec](src/production_legal_agentic_graph_rag/cache/cache_spec.md)).
-- `api/`: FastAPI (OpenAI-compatible) + OpenWebUI + Redis + Postgres (chỉ cho OpenWebUI); spec tổng toàn hệ thống ([spec](src/production_legal_agentic_graph_rag/api/api_spec.md)).
-- `observability/`: Langfuse trace một lượt hỏi + Prometheus `/metrics` cho `api` ([spec](src/production_legal_agentic_graph_rag/observability/observability_spec.md)).
-- `evaluation/`: RAGAS; Phase 1 sinh golden testset, Phase 2 đã chạy đủ 157 mẫu (MMR tắt; kết quả ở README) ([spec](src/production_legal_agentic_graph_rag/evaluation/evaluation_spec.md)).
+- **Giữ nguyên số mục spec** vì code/spec khác tham chiếu (`conversation_spec.md` mục 12.1, `observability_spec.md` mục 4.5, `evaluation_spec.md` mục 3.x/4.x…); đổi số mục làm hỏng tham chiếu. Spec đã cô đọng (bản đầy đủ ở git history).
+- `tools/`: CLI Typer chạy từng bước pipeline độc lập; `tests/`: `test_<package>_<phần>.py`.
+- `deploy/`: Docker compose production, chỉ phục vụ end-user, không phải code import được. `observability/` (root): Langfuse/Prometheus/Grafana, tách khỏi `deploy/` vì không phục vụ end-user.
+- `models/`: model tải local (vd. vietnamese-reranker, chạy in-process, không host tách rời).
 
 ## Baseline kế thừa (từ production-legal-qa-rag)
 
@@ -106,7 +84,7 @@
   - Branch ngắn hạn, tạo từ `main`, PR vào `main`, không lồng branch.
   - Commit message `loại(phạm-vi): mô tả` (conventional commits); commit do Claude tạo kết thúc bằng dòng `Co-Authored-By`.
   - Tag `vX.Y.Z` chỉ gắn trên `main` sau merge, ở mốc có thể phát hành; không gắn sau mỗi merge.
-- **Sau khi sửa `CLAUDE.md` hoặc `.claude/` (agent, skill, settings), mở phiên Claude Code mới** trước khi gọi `develop-cycle`: subagent nhận bản `CLAUDE.md` đã nạp lúc bắt đầu phiên, không phải bản mới trên đĩa; định nghĩa agent và quyền cũng có thể chưa nạp lại.
+- **Sau khi sửa `CLAUDE.md`, mở phiên mới (hoặc `/compact`) trước khi gọi `develop-cycle`:** `CLAUDE.md` nạp lúc bắt đầu phiên và subagent nhận bản đó. Định nghĩa agent (`.claude/agents/*.md`) tự nạp lại sau vài giây (trừ khi tạo thư mục `agents` mới). Quyền trong `settings.json`: chưa kiểm chứng, nên mở phiên mới cho chắc.
 - Việc không có spec (chore, docs, đổi tên, cấu hình): làm tay, không dùng `develop-cycle`; chỉ cần CI `checks` xanh rồi người dùng tự merge squash.
 - Fix nhỏ trong `src/` (nhánh `fix/...`): làm tay, bắt buộc kèm regression test; áp dụng khi sửa khoảng ≤ 3 file và không đổi contract công khai. Vượt ngưỡng hoặc đổi hành vi thì phải có spec (`architect` → `develop-cycle`).
 - Sau mỗi lần merge (người dùng tự làm):
