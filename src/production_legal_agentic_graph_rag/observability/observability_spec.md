@@ -1,5 +1,7 @@
 # Observability — Langfuse tracing + Prometheus/Grafana metrics
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục, đặc biệt 4.3–4.5.
 - Spec liên quan: [api_spec.md](../api/api_spec.md), [conversation_spec.md](../conversation/conversation_spec.md).
 

@@ -1,5 +1,7 @@
 # Evaluation — RAGAS: sinh golden testset (Phase 1) và chấm hệ thống (Phase 2): Reference Spec
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục, đặc biệt 3.x/4.x/11.x và các nhãn nghiệm thu/rủi ro được tham chiếu.
 - Mốc trạng thái 2026-10-03: Phase 1 đã implement (PR #55/#60/#63/#64/#66), raw 203 → review luna → 157 mẫu keep; Phase 2 đã merge và chạy đủ 157 mẫu (MMR tắt), kết quả ở README và `data/eval/phase2/report.json`.
 - Spec là contract triển khai; có code/checks không đồng nghĩa đã nghiệm thu bằng dịch vụ thật.

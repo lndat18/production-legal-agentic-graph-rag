@@ -1,5 +1,7 @@
 # Formatting — DOCX → Markdown: Reference Spec
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục để không làm hỏng tham chiếu từ code/spec khác.
 - Spec liên quan: [chunking_spec.md](../chunking/chunking_spec.md).
 

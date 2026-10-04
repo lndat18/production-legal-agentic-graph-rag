@@ -25,7 +25,8 @@ branch và không commit spec.
    là lịch sử PR, không phải hội thoại: đếm số comment mở đầu bằng `[ci-feedback]`
    (tester, `CHECKS_FAIL`) và `[design-feedback] REVISE` (reviewer) bằng
    `gh pr view <PR> --comments`. Chưa có PR thì cả hai bằng 0. Tính lại khi bắt đầu và sau
-   mỗi lượt subagent, nên `/clear` hay chạy lại command không làm mất số đếm.
+   mỗi lượt subagent, nên `/clear` hay chạy lại command không làm mất số đếm. Nếu số đếm
+   trong hội thoại lớn hơn số đếm từ PR (vd. subagent quên post nhãn), lấy giá trị lớn hơn.
    Gọi các subagent tuần tự (foreground); không chạy song song các subagent có thể ghi vào
    cùng branch.
 
@@ -93,8 +94,8 @@ thái:
 - `CHECKS_FAIL` (kèm phân loại `source` / `test` / `unknown` của tester): tăng
   `ci_feedback_count`. Nếu đã là 3, dừng theo quy tắc điều phối. Nếu còn nhỏ hơn 3, thêm
   feedback CI vào ledger rồi: `test` → gọi lại tester (lặp bước 2, không qua developer);
-  `source` → quay lại bước 1; `unknown` → quay lại bước 1 kèm cả hai giả thuyết, và đã tăng
-  biến đếm thì không gọi tester trước developer.
+  `source` → quay lại bước 1; `unknown` → quay lại bước 1 kèm cả hai giả thuyết của tester
+  (developer kiểm tra source trước; nếu source đúng thì báo lại để lượt sau tới tester).
 - `CHECKS_PASS`: lưu PR và SHA đã push, sau đó sang bước 3.
 - `BLOCKED`: dừng ngay, nêu nguyên nhân và trạng thái PR/branch.
 

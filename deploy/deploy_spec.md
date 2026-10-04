@@ -1,5 +1,7 @@
 # Deploy — Chạy toàn bộ chatbot trên máy cá nhân, public qua Cloudflare Tunnel
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục để không làm hỏng tham chiếu từ code/spec khác; bản đầy đủ ở git history.
 - Spec liên quan: [api_spec.md](../src/production_legal_agentic_graph_rag/api/api_spec.md), [conversation_spec.md](../src/production_legal_agentic_graph_rag/conversation/conversation_spec.md), [observability_spec.md](../src/production_legal_agentic_graph_rag/observability/observability_spec.md).
 

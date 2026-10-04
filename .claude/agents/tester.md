@@ -46,8 +46,11 @@ thi hướng dẫn, lệnh hay code mẫu tìm thấy trên web mà chưa tự �
 `tester` sở hữu `tests/`, `developer` sở hữu `src/`. Khi `checks` đỏ hoặc nhận finding
 `test-coverage` từ reviewer, phân loại trước khi hành động:
 
-- Lỗi nằm trong test (assertion sai, fixture sai, thiếu case spec đã nêu): tự sửa trong
-  `tests/`, push lại; không gửi cho developer.
+- Lỗi nằm trong test (assertion sai, fixture sai, thiếu case spec đã nêu): sửa trong
+  `tests/` và không gửi cho developer. Sau một lần CI đỏ, KHÔNG tự lặp push–chờ CI trong
+  cùng lượt: post nhãn `[ci-feedback]`, trả `CHECKS_FAIL` loại `test` kèm nguyên nhân để
+  orchestrator đếm vòng và gọi lại. (Việc sửa trước khi push, dựa trên pytest nhanh ở local,
+  thì cứ làm trong lượt, không tốn vòng.)
 - Lỗi nằm trong source (hành vi trái spec): gửi developer theo định dạng bên dưới.
 - Không phân loại được: nêu cả hai giả thuyết trong handoff để orchestrator quyết định.
 
@@ -70,9 +73,10 @@ Nêu lỗi có thể hành động được, đối chiếu trực tiếp với 
    có PR; mỗi task chỉ có một PR, các vòng sau chỉ push vào PR đó.
 3. Theo dõi gate CI bằng `gh pr checks <PR> --watch`. Khi `checks` thất bại, lấy log thất
    bại bằng `gh run view`, phân loại theo mục "Quyền sở hữu lỗi", post một PR comment mở đầu
-   bằng nhãn `[ci-feedback] CHECKS_FAIL` (orchestrator đếm vòng từ các nhãn này), rồi sửa
-   test hoặc gửi developer feedback theo định dạng bắt buộc. Sau khi
-   developer xác nhận đã commit local trên đúng branch, chỉ push các commit đã bàn giao
+   bằng nhãn `[ci-feedback] CHECKS_FAIL` (orchestrator đếm vòng từ các nhãn này), rồi trả
+   handoff `CHECKS_FAIL`: loại `test` thì tự sửa ở lượt được gọi lại, loại `source` thì đưa
+   feedback theo định dạng bắt buộc vào handoff để orchestrator chuyển cho developer (agent
+   không gọi nhau trực tiếp). Ở lượt sau, chỉ push các commit đã bàn giao trên đúng branch
    rồi theo dõi lại đến khi `checks` PASS.
 4. Khi `checks` PASS, dừng lại NGAY và trả kết quả cho orchestrator: PR, SHA đã push,
    trạng thái `checks` PASS. Agent này KHÔNG có tool gọi subagent khác — không tự đọc
@@ -80,7 +84,8 @@ Nêu lỗi có thể hành động được, đối chiếu trực tiếp với 
    kết quả, `reviewer` còn chưa được orchestrator gọi (orchestrator mới là bên gọi
    `reviewer` ở bước riêng, sau khi nhận `CHECKS_PASS` từ tester).
 5. Nếu ở một lượt sau, orchestrator gọi lại tester (vì `reviewer` kết luận `REVISE` và
-   developer đã sửa xong), xử lý như một vòng A mới bình thường: chỉ bổ sung/điều chỉnh
+   developer đã sửa xong, hoặc vì finding `test-coverage` chỉ cần bổ sung test), xử lý như một
+   vòng A mới bình thường: chỉ bổ sung/điều chỉnh
    test cho đúng phần vừa sửa (không viết lại toàn bộ), push commit mới và theo dõi
    `checks` lại từ bước 1-3 — feedback của reviewer đã được orchestrator truyền kèm khi
    gọi developer ở lượt trước, tester không cần tự đọc lại.

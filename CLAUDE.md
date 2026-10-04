@@ -1,7 +1,14 @@
 # production-legal-agentic-graph-rag
 
-RAG chatbot hỏi-đáp pháp luật Việt Nam, thiết kế theo hướng sát production nhưng gọn
+Agentic Graph RAG hỏi-đáp pháp luật Việt Nam, thiết kế theo hướng sát production nhưng gọn
 (dự án cá nhân, public qua Cloudflare Tunnel). Python 3.14, quản lý bằng `uv`.
+
+**Trạng thái dự án (2026-10-04): giai đoạn đầu.** Code hiện là baseline RAG kế thừa nguyên
+vẹn từ `production-legal-qa-rag` (lịch sử git làm lại từ đầu). Hướng phát triển: dùng
+knowledge graph (Neo4j) và agent (LangGraph) để giải bài toán retrieval phức tạp hơn; kiến
+trúc đích ở `docs/architecture.png`, README mục "RAG vs. Agentic Graph RAG". Mọi thứ về
+graph/agent là kế hoạch, chưa được triển khai. Mục "Baseline kế thừa" bên dưới mô tả **baseline kế
+thừa**, không phải tiến độ của dự án này.
 
 ## Cấu trúc thư mục
 
@@ -38,9 +45,9 @@ mục** vì code/spec khác tham chiếu (`conversation_spec.md` mục 12.1, `ob
 | `observability/` | Langfuse trace 1 lượt hỏi + Prometheus `/metrics` cho `api`                                       | [observability_spec.md](src/production_legal_agentic_graph_rag/observability/observability_spec.md) |
 | `evaluation/`   | Đánh giá bằng RAGAS: Phase 1 sinh golden testset (đã merge); Phase 2 đã merge và chạy đủ 157 mẫu (MMR tắt; kết quả ở README) | [evaluation_spec.md](src/production_legal_agentic_graph_rag/evaluation/evaluation_spec.md)       |
 
-## Tiến độ
+## Baseline kế thừa (từ production-legal-qa-rag)
 
-Trạng thái tại **2026-10-03: dự án Hoàn thành (Done)**. Tóm tắt: phần lõi (pipeline → API → deploy end-user) đã xong và nghiệm
+Trạng thái của hệ thống RAG gốc tại **2026-10-03: Hoàn thành (Done)**. Tóm tắt: phần lõi (pipeline → API → deploy end-user) đã xong và nghiệm
 thu; CD đã xong (#76, phát hành `v0.1.0` ngày 2026-10-03); observe end-user, golden testset và Evaluation Phase 2 đã xong.
 
 **Đã xong**
@@ -150,7 +157,7 @@ pr view/list/diff/checks, grep/rg/find/cat/ls...) và deny các thao tác phá h
 ở file mà `main` có bản khác sẽ bị chặn → `git stash` trước.
 
 **Làm việc không có spec** (chore, docs, đổi tên, cấu hình): làm tay, không dùng `develop-cycle`; chỉ cần CI `checks` xanh rồi người dùng tự merge squash.
-**Sau mỗi lần merge** (người dùng tự làm): `git checkout main && git pull`, `git branch -D <branch>`, đổi `Trạng thái:` của spec liên quan sang `Implemented`, cập nhật mục "Tiến độ" nếu cần. Chỉ gắn tag `vX.Y.Z` ở mốc có thể phát hành, không gắn sau mỗi merge.
+**Sau mỗi lần merge** (người dùng tự làm): `git checkout main && git pull`, `git branch -D <branch>`, đổi `Trạng thái:` của spec liên quan sang `Implemented`, cập nhật mục "Trạng thái dự án" nếu cần. Chỉ gắn tag `vX.Y.Z` ở mốc có thể phát hành, không gắn sau mỗi merge.
 
 ## Lệnh dev
 

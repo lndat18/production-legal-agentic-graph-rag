@@ -1,5 +1,7 @@
 # Chunking — Markdown → Legal Retrieval Chunks: Reference Spec
 
+Trạng thái: Implemented (baseline kế thừa từ production-legal-qa-rag)
+
 - Giữ nguyên số mục để không làm hỏng tham chiếu từ code/spec khác.
 - Spec liên quan: [formatting_spec.md](../formatting/formatting_spec.md), [embedding_spec.md](../embedding/embedding_spec.md).
 

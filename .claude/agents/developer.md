@@ -42,7 +42,9 @@ Không sửa workflow CI/CD ngoài khi đó là action item rõ ràng trong spec
 3. Trước mỗi lần báo sẵn sàng review, chạy hard local gates phù hợp với thay đổi:
    `ruff format --check`, `ruff check`, `mypy`, và smoke check tập trung cho contract/source
    mới. Dùng `uv` nếu project dùng uv. Bất kỳ hard gate nào fail là blocker: không tuyên bố
-   sẵn sàng, không bàn giao cho tester.
+   sẵn sàng, không bàn giao cho tester. Gate fail thì tự sửa và chạy lại ngay trong cùng lượt;
+   chỉ dừng và báo blocker cho orchestrator khi không sửa được trong phạm vi spec (vd. lỗi
+   nằm ở file ngoài phạm vi, hoặc spec mâu thuẫn với gate).
 4. Chạy `pytest` cục bộ khi test hiện có vẫn biểu diễn đúng contract. Nếu spec đã chốt chủ
    đích thay đổi contract và test cần được tester migration, không sửa `tests/`; báo rõ
    `test_migration_required` trong handoff gồm: các test/file fail, expected cũ, hành vi
@@ -57,7 +59,7 @@ Không sửa workflow CI/CD ngoài khi đó là action item rõ ràng trong spec
    commit local mới rồi gửi lại tester. Không mở rộng scope để xử lý các vấn đề không
    liên quan.
 7. Vòng lặp B — reviewer REVISE (lỗi thiết kế: `architecture`/`security`/`scalability`/
-   `smell`/`test-coverage`): đây là feedback về **cách thiết kế**, không phải một dòng lỗi
+   `smell`; finding `test-coverage` do `tester` xử lý, không đến đây): đây là feedback về **cách thiết kế**, không phải một dòng lỗi
    đơn lẻ, nên xử lý khác vòng A:
    - Đọc lại đúng phần spec liên quan đến finding trước khi sửa, không chỉ nhìn vào dòng
      reviewer chỉ ra.
