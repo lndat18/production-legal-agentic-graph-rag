@@ -9,7 +9,7 @@ description: Quy ước coding chuẩn production cho project — kiến trúc t
 - Toàn bộ source code có thể import được phải nằm trong `src/production_legal_agentic_graph_rag/`
 - Mỗi logic nghiệp vụ tách thành 1 package riêng. Ví dụ: logic chunking → `src/production_legal_agentic_graph_rag/chunking/`
 - Trong mỗi package, chia nhỏ thành nhiều module phục vụ cho logic đó (không gộp hết vào 1 file)
-- Không cần đề cập đến việc viết tests trong spec — đã có agent CI/CD riêng đảm nhiệm
+- Spec không cần liệt kê test cụ thể (agent `tester` đảm nhiệm), nhưng phải mô tả đủ hành vi quan trọng, gồm lỗi và trường hợp biên, vì `tester` và `reviewer` suy test từ spec. Phần phụ thuộc dịch vụ ngoài (Neo4j...) ghi rõ dùng fake qua interface mỏng hay cần integration thật (marker `integration`)
 
 ## Naming conventions
 
