@@ -61,6 +61,10 @@
   - `tester`: sở hữu `tests/`; viết unit/integration/data-schema test theo spec, chạy nhanh file test vừa sửa trước khi push; đảm nhiệm push + mở PR, tổng hợp feedback.
   - `reviewer`: review kiến trúc/logic/security/scalability đối chiếu spec + skill `coding-convention`; chạy local sau khi CI pass; PASS thì comment kết luận lên PR; không tự merge.
 - Model: `architect` Opus 5.5; các agent còn lại Sonnet 5.5; tất cả `effort: medium`.
+- Skill và MCP của agent:
+  - `coding-convention` nạp sẵn cho cả 4 agent qua `skills:` (subagent không thừa hưởng skill của phiên chính).
+  - `context7` (tra tài liệu thư viện đúng phiên bản): `architect`, `developer`, `tester`; `hf-mcp-server` (model, reranker): chỉ `architect`; `reviewer` không dùng MCP.
+  - Skill `/code-review`, `/security-review`, `/simplify` do người dùng gọi tay ngoài vòng lặp (vd. `security-review` trước PR có code nhận input người dùng hoặc tạo truy vấn Cypher).
 - Phân luồng lỗi theo người sở hữu: lỗi `src/` về `developer`; lỗi `tests/` và finding `test-coverage` về `tester`.
 - Skill `develop-cycle` (`.claude/skills/develop-cycle/`): chạy vòng developer → tester → reviewer cho một spec; `argument-hint: <đường dẫn spec.md> <tên branch>`.
   - Điều kiện gọi: spec đã commit và `Trạng thái: Approved`; branch do người dùng tạo và đang checkout; worktree sạch.
@@ -70,7 +74,6 @@
   - allow: lệnh `git`/`gh`/đọc-file an toàn (status, log, diff, pr view/list/diff/checks, grep/rg/find/cat/ls…)
   - deny: `push --force`, `reset --hard`, `git clean`, `git branch -D`, `rm`, `find -delete/-exec`, đọc `.env`…
   - chỉ `tester` push/mở PR
-- Danh sách vấn đề và quyết định của quy trình: `.claude/agent_problems.md`.
 
 ## Vận hành git/CI
 
