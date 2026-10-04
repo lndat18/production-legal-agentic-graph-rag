@@ -14,19 +14,19 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-import production_legal_qa_rag.api.app as app_module
-from production_legal_qa_rag.api.routes import router
-from production_legal_qa_rag.config import ApiSettings
-from production_legal_qa_rag.conversation.history import (
+import production_legal_agentic_graph_rag.api.app as app_module
+from production_legal_agentic_graph_rag.api.routes import router
+from production_legal_agentic_graph_rag.config import ApiSettings
+from production_legal_agentic_graph_rag.conversation.history import (
     DATA_SNAPSHOT_DISCLAIMER,
     SOURCES_FOOTER_MARKER,
 )
-from production_legal_qa_rag.conversation.models import (
+from production_legal_agentic_graph_rag.conversation.models import (
     ChatMessage,
     RequestContext,
     TurnTrace,
 )
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.generation.models import (
     Citation,
     CitationsEvent,
     DoneEvent,
@@ -35,7 +35,7 @@ from production_legal_qa_rag.generation.models import (
     TokenEvent,
     Usage,
 )
-from production_legal_qa_rag.observability.turn_trace import RuntimeVersions
+from production_legal_agentic_graph_rag.observability.turn_trace import RuntimeVersions
 
 _API_KEY = "test-chatbot-api-key"
 _AUTH_HEADERS = {"Authorization": f"Bearer {_API_KEY}"}
@@ -156,7 +156,11 @@ def test_models_requires_auth_then_returns_single_model() -> None:
     assert authenticated.json() == {
         "object": "list",
         "data": [
-            {"id": "legal-qa", "object": "model", "owned_by": "production-legal-qa-rag"}
+            {
+                "id": "legal-qa",
+                "object": "model",
+                "owned_by": "production-legal-agentic-graph-rag",
+            }
         ],
     }
 

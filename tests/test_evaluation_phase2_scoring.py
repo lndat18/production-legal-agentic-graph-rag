@@ -10,19 +10,19 @@ import pytest
 
 pytest.importorskip("ragas", reason="Requires the isolated eval dependency group")
 
-from production_legal_qa_rag.evaluation import scoring
-from production_legal_qa_rag.evaluation.groq_round_robin import (
+from production_legal_agentic_graph_rag.evaluation import scoring
+from production_legal_agentic_graph_rag.evaluation.groq_round_robin import (
     DailyQuotaExhaustedError,
 )
-from production_legal_qa_rag.evaluation.jsonl_store import JsonlStore
-from production_legal_qa_rag.evaluation.run_models import (
+from production_legal_agentic_graph_rag.evaluation.jsonl_store import JsonlStore
+from production_legal_agentic_graph_rag.evaluation.run_models import (
     AnswerRecord,
     RetrievalRecord,
     ScoreRecord,
     case_id,
 )
-from production_legal_qa_rag.generation.generator import build_context
-from production_legal_qa_rag.generation.models import Citation
+from production_legal_agentic_graph_rag.generation.generator import build_context
+from production_legal_agentic_graph_rag.generation.models import Citation
 from tests.test_evaluation_phase2 import (
     make_chunk,
     make_config,

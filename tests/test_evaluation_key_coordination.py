@@ -25,8 +25,8 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_openai import ChatOpenAI
 from openai import BadRequestError, RateLimitError
 
-from production_legal_qa_rag.evaluation import groq_round_robin
-from production_legal_qa_rag.evaluation.groq_round_robin import (
+from production_legal_agentic_graph_rag.evaluation import groq_round_robin
+from production_legal_agentic_graph_rag.evaluation.groq_round_robin import (
     DailyQuotaExhaustedError,
     GroqRoundRobinChatModel,
     TokenTotals,

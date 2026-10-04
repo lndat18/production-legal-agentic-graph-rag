@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from production_legal_qa_rag.evaluation.unit_splitter import (
+from production_legal_agentic_graph_rag.evaluation.unit_splitter import (
     MAX_UNIT_CHARS,
     EvalUnit,
     split_directory,

@@ -20,17 +20,22 @@ from langchain_openai import ChatOpenAI
 from openai import APIStatusError, RateLimitError
 from pydantic import ValidationError
 
-from production_legal_qa_rag.config import EmbeddingSettings, TestsetGeneratorSettings
-from production_legal_qa_rag.evaluation.corpus_loader import load_markdown_documents
-from production_legal_qa_rag.evaluation.embeddings_adapter import (
+from production_legal_agentic_graph_rag.config import (
+    EmbeddingSettings,
+    TestsetGeneratorSettings,
+)
+from production_legal_agentic_graph_rag.evaluation.corpus_loader import (
+    load_markdown_documents,
+)
+from production_legal_agentic_graph_rag.evaluation.embeddings_adapter import (
     RagasEmbeddingsAdapter,
     _coerce_embeddings,
 )
-from production_legal_qa_rag.evaluation.groq_round_robin import (
+from production_legal_agentic_graph_rag.evaluation.groq_round_robin import (
     DailyQuotaExhaustedError,
     GroqRoundRobinChatModel,
 )
-from production_legal_qa_rag.evaluation.models import GoldenTestCase
+from production_legal_agentic_graph_rag.evaluation.models import GoldenTestCase
 
 # ==========================================================================
 # models.py -- GoldenTestCase (mục 5)
@@ -191,7 +196,8 @@ def test_embed_documents_chia_batch_theo_dung_kich_thuoc(
     monkeypatch: pytest.MonkeyPatch,
 ):
     monkeypatch.setattr(
-        "production_legal_qa_rag.evaluation.embeddings_adapter._BATCH_SIZE", 2
+        "production_legal_agentic_graph_rag.evaluation.embeddings_adapter._BATCH_SIZE",
+        2,
     )
     client = _FakeHFClient(
         [

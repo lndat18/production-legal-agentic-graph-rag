@@ -40,16 +40,24 @@ from langchain_core.outputs import LLMResult
 from langchain_core.tracers.context import register_configure_hook
 from pydantic import BaseModel
 
-from production_legal_qa_rag.conversation.condenser import CONDENSE_SYSTEM_PROMPT
-from production_legal_qa_rag.conversation.models import (
+from production_legal_agentic_graph_rag.conversation.condenser import (
+    CONDENSE_SYSTEM_PROMPT,
+)
+from production_legal_agentic_graph_rag.conversation.models import (
     ChatMessage,
     RequestContext,
     TurnTrace,
 )
-from production_legal_qa_rag.conversation.orchestrator import ChatOrchestrator
-from production_legal_qa_rag.generation.generator import GENERATION_SYSTEM_PROMPT
-from production_legal_qa_rag.generation.guardrail import GUARDRAIL_SYSTEM_PROMPT
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.conversation.orchestrator import (
+    ChatOrchestrator,
+)
+from production_legal_agentic_graph_rag.generation.generator import (
+    GENERATION_SYSTEM_PROMPT,
+)
+from production_legal_agentic_graph_rag.generation.guardrail import (
+    GUARDRAIL_SYSTEM_PROMPT,
+)
+from production_legal_agentic_graph_rag.generation.models import (
     CitationsEvent,
     DoneEvent,
     ErrorEvent,
@@ -58,7 +66,7 @@ from production_legal_qa_rag.generation.models import (
     TokenEvent,
     WarningEvent,
 )
-from production_legal_qa_rag.retrieval.hyde import HYDE_SYSTEM_PROMPT
+from production_legal_agentic_graph_rag.retrieval.hyde import HYDE_SYSTEM_PROMPT
 
 app = typer.Typer(add_completion=False)
 

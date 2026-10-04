@@ -1,4 +1,4 @@
-# production-legal-qa-rag
+# production-legal-agentic-graph-rag
 
 RAG chatbot hỏi-đáp pháp luật Việt Nam, thiết kế theo hướng sát production nhưng gọn
 (dự án cá nhân, public qua Cloudflare Tunnel). Python 3.14, quản lý bằng `uv`.
@@ -6,7 +6,7 @@ RAG chatbot hỏi-đáp pháp luật Việt Nam, thiết kế theo hướng sát
 ## Cấu trúc thư mục
 
 ```
-src/production_legal_qa_rag/   Toàn bộ source code import được (packages theo nghiệp vụ)
+src/production_legal_agentic_graph_rag/   Toàn bộ source code import được (packages theo nghiệp vụ)
 tests/                         Test, đặt tên test_<package>_<phần>.py
 tools/                         CLI (Typer) chạy từng bước pipeline độc lập, vd. tools/chunk_documents.py
 data/                          raw -> markdown -> chunks -> embeddings, bm25/ cho sparse index
@@ -17,7 +17,7 @@ docs/                          Tài liệu tổng quan hệ thống (luồng x�
 .claude/                       Cấu hình Claude Code cho project: agents/, skills/, settings.json
 ```
 
-Mỗi package trong `src/production_legal_qa_rag/` có một `<package>_spec.md` nằm ngay
+Mỗi package trong `src/production_legal_agentic_graph_rag/` có một `<package>_spec.md` nằm ngay
 cạnh nó, là nguồn sự thật cho thiết kế/quyết định của package đó — đọc trước khi sửa code
 trong package tương ứng. Các spec đã **cô đọng 2026-09-30 và rút gọn lần 2 2026-10-01 (chỉ giữ phần bắt buộc)** (bản đầy đủ ở git history) và **giữ nguyên số
 mục** vì code/spec khác tham chiếu (`conversation_spec.md` mục 12.1, `observability_spec.md` mục 4.5,
@@ -27,16 +27,16 @@ mục** vì code/spec khác tham chiếu (`conversation_spec.md` mục 12.1, `ob
 
 | Package           | Vai trò                                                                                                 | Spec                                                                                 |
 | ----------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `formatting/`   | `.docx` pháp luật → Markdown có cấu trúc, giữ vị trí pháp lý (Điều/Khoản/Điểm)         | [formatting_spec.md](src/production_legal_qa_rag/formatting/formatting_spec.md)       |
-| `chunking/`     | Markdown → chunk tự đủ nghĩa, sẵn sàng embedding                                                  | [chunking_spec.md](src/production_legal_qa_rag/chunking/chunking_spec.md)             |
-| `embedding/`    | Chunk → vector, giữ citation cho bước sinh câu trả lời                                            | [embedding_spec.md](src/production_legal_qa_rag/embedding/embedding_spec.md)          |
-| `retrieval/`    | Câu hỏi → tập`RetrievedChunk` liên quan (HyDE, hybrid, RRF, MMR, rerank local GPU)                | [retrieval_spec.md](src/production_legal_qa_rag/retrieval/retrieval_spec.md)          |
-| `generation/`   | `RetrievedChunk` đã rerank → câu trả lời có citation, đã kiểm chứng                         | [generation_spec.md](src/production_legal_qa_rag/generation/generation_spec.md)       |
-| `conversation/` | Điều phối 1 lượt hỏi đáp: condense → guardrail → cache → admission → retrieve → generate    | [conversation_spec.md](src/production_legal_qa_rag/conversation/conversation_spec.md) |
-| `cache/`        | Cache câu trả lời & kết quả retrieval bằng Redis, single-flight                                    | [cache_spec.md](src/production_legal_qa_rag/cache/cache_spec.md)                      |
-| `api/`          | FastAPI (OpenAI-compatible) + OpenWebUI + Redis + Postgres (chỉ cho OpenWebUI), spec tổng toàn hệ thống | [api_spec.md](src/production_legal_qa_rag/api/api_spec.md)                            |
-| `observability/` | Langfuse trace 1 lượt hỏi + Prometheus `/metrics` cho `api`                                       | [observability_spec.md](src/production_legal_qa_rag/observability/observability_spec.md) |
-| `evaluation/`   | Đánh giá bằng RAGAS: Phase 1 sinh golden testset (đã merge); Phase 2 đã merge và chạy đủ 157 mẫu (MMR tắt; kết quả ở README) | [evaluation_spec.md](src/production_legal_qa_rag/evaluation/evaluation_spec.md)       |
+| `formatting/`   | `.docx` pháp luật → Markdown có cấu trúc, giữ vị trí pháp lý (Điều/Khoản/Điểm)         | [formatting_spec.md](src/production_legal_agentic_graph_rag/formatting/formatting_spec.md)       |
+| `chunking/`     | Markdown → chunk tự đủ nghĩa, sẵn sàng embedding                                                  | [chunking_spec.md](src/production_legal_agentic_graph_rag/chunking/chunking_spec.md)             |
+| `embedding/`    | Chunk → vector, giữ citation cho bước sinh câu trả lời                                            | [embedding_spec.md](src/production_legal_agentic_graph_rag/embedding/embedding_spec.md)          |
+| `retrieval/`    | Câu hỏi → tập`RetrievedChunk` liên quan (HyDE, hybrid, RRF, MMR, rerank local GPU)                | [retrieval_spec.md](src/production_legal_agentic_graph_rag/retrieval/retrieval_spec.md)          |
+| `generation/`   | `RetrievedChunk` đã rerank → câu trả lời có citation, đã kiểm chứng                         | [generation_spec.md](src/production_legal_agentic_graph_rag/generation/generation_spec.md)       |
+| `conversation/` | Điều phối 1 lượt hỏi đáp: condense → guardrail → cache → admission → retrieve → generate    | [conversation_spec.md](src/production_legal_agentic_graph_rag/conversation/conversation_spec.md) |
+| `cache/`        | Cache câu trả lời & kết quả retrieval bằng Redis, single-flight                                    | [cache_spec.md](src/production_legal_agentic_graph_rag/cache/cache_spec.md)                      |
+| `api/`          | FastAPI (OpenAI-compatible) + OpenWebUI + Redis + Postgres (chỉ cho OpenWebUI), spec tổng toàn hệ thống | [api_spec.md](src/production_legal_agentic_graph_rag/api/api_spec.md)                            |
+| `observability/` | Langfuse trace 1 lượt hỏi + Prometheus `/metrics` cho `api`                                       | [observability_spec.md](src/production_legal_agentic_graph_rag/observability/observability_spec.md) |
+| `evaluation/`   | Đánh giá bằng RAGAS: Phase 1 sinh golden testset (đã merge); Phase 2 đã merge và chạy đủ 157 mẫu (MMR tắt; kết quả ở README) | [evaluation_spec.md](src/production_legal_agentic_graph_rag/evaluation/evaluation_spec.md)       |
 
 ## Tiến độ
 

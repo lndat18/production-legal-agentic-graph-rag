@@ -64,7 +64,7 @@ fi
 if [[ -n "${pull_version}" ]]; then
     # Export trong script, không ghi vào .env. Pull lỗi (chưa public/chưa có tag/chưa login)
     # thì dừng, KHÔNG rơi về build.
-    export API_IMAGE="ghcr.io/lndat18/production-legal-qa-rag:${pull_version}-${torch_variant}"
+    export API_IMAGE="ghcr.io/lndat18/production-legal-agentic-graph-rag:${pull_version}-${torch_variant}"
     echo "Pull image ${API_IMAGE} (không build)."
     if ! docker compose --env-file "${env_file}" "${compose_files[@]}" pull api; then
         echo "Pull ${API_IMAGE} thất bại — kiểm tra tag đã có, package GHCR đã Public (hoặc docker login ghcr.io bằng PAT read:packages). Không tự build." >&2

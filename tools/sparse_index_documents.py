@@ -17,8 +17,8 @@ from pathlib import Path
 
 import typer
 
-from production_legal_qa_rag.retrieval.bm25 import BM25_PARAMS_VERSION
-from production_legal_qa_rag.retrieval.sparse_index import build_index
+from production_legal_agentic_graph_rag.retrieval.bm25 import BM25_PARAMS_VERSION
+from production_legal_agentic_graph_rag.retrieval.sparse_index import build_index
 
 DEFAULT_CHUNKS_DIR = Path("data/chunks")
 DEFAULT_PARAMS_OUT = Path("data/bm25/bm25_params.json")

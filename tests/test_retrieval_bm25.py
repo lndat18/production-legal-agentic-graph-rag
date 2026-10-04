@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import math
 
-from production_legal_qa_rag.retrieval import bm25, fusion, mmr
-from production_legal_qa_rag.retrieval.bm25 import BM25Encoder
-from production_legal_qa_rag.retrieval.models import Candidate, SearchHit
+from production_legal_agentic_graph_rag.retrieval import bm25, fusion, mmr
+from production_legal_agentic_graph_rag.retrieval.bm25 import BM25Encoder
+from production_legal_agentic_graph_rag.retrieval.models import Candidate, SearchHit
 
 CORPUS = [
     "Điều 3 - Khoản 1 người lao động được nghỉ hằng năm",

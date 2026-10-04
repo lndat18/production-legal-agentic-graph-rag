@@ -366,7 +366,7 @@ def test_dockerfile_cmd_chay_uvicorn_factory_khong_con_migration() -> None:
     assert "alembic" not in content
     assert "uvicorn" in cmd_line
     assert "--factory" in cmd_line
-    assert "production_legal_qa_rag.api.app:create_app" in cmd_line
+    assert "production_legal_agentic_graph_rag.api.app:create_app" in cmd_line
 
 
 def test_dockerfile_khong_bake_data_bm25_vao_image() -> None:

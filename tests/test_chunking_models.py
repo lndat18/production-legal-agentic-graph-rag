@@ -12,7 +12,7 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from production_legal_qa_rag.chunking.models import (
+from production_legal_agentic_graph_rag.chunking.models import (
     Chunk,
     ChunkingResult,
     DocumentTree,

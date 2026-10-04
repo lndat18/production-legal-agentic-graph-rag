@@ -17,21 +17,21 @@ from typing import Any
 
 import pytest
 
-from production_legal_qa_rag.api import routes
-from production_legal_qa_rag.api.openai_format import sse_stream
-from production_legal_qa_rag.conversation.models import (
+from production_legal_agentic_graph_rag.api import routes
+from production_legal_agentic_graph_rag.api.openai_format import sse_stream
+from production_legal_agentic_graph_rag.conversation.models import (
     ChatMessage,
     RequestContext,
     TurnTrace,
 )
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.generation.models import (
     DoneEvent,
     GenerationEvent,
     GuardrailVerdict,
     StatusEvent,
 )
-from production_legal_qa_rag.observability import tracing
-from production_legal_qa_rag.observability.turn_trace import RuntimeVersions
+from production_legal_agentic_graph_rag.observability import tracing
+from production_legal_agentic_graph_rag.observability.turn_trace import RuntimeVersions
 
 _VERSIONS = RuntimeVersions(prompt_version="v1", corpus_version="c1", model_name="m1")
 _CONTEXT = RequestContext(user_id="user-1", chat_id="chat-1", request_id="req-1")

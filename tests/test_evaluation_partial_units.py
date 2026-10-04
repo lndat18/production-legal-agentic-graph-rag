@@ -19,16 +19,16 @@ import pytest
 from pydantic import ValidationError
 from typer.testing import CliRunner
 
-from production_legal_qa_rag.evaluation import testset_generator as tg
-from production_legal_qa_rag.evaluation.groq_round_robin import (
+from production_legal_agentic_graph_rag.evaluation import testset_generator as tg
+from production_legal_agentic_graph_rag.evaluation.groq_round_robin import (
     DailyQuotaExhaustedError,
 )
-from production_legal_qa_rag.evaluation.models import (
+from production_legal_agentic_graph_rag.evaluation.models import (
     GenerationProgress,
     GoldenTestCase,
     UnitProgress,
 )
-from production_legal_qa_rag.evaluation.unit_splitter import (
+from production_legal_agentic_graph_rag.evaluation.unit_splitter import (
     FIXED_TOKENS_PER_UNIT,
     EvalUnit,
     split_directory,

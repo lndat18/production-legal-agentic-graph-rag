@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from production_legal_qa_rag.api.schemas import (
+from production_legal_agentic_graph_rag.api.schemas import (
     ApiError,
     ChatCompletionRequest,
     ChatCompletionRequestMessage,

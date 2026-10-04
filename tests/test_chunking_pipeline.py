@@ -14,9 +14,9 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from production_legal_qa_rag.chunking import pipeline, splitter
-from production_legal_qa_rag.chunking.models import Chunk
-from production_legal_qa_rag.chunking.pipeline import (
+from production_legal_agentic_graph_rag.chunking import pipeline, splitter
+from production_legal_agentic_graph_rag.chunking.models import Chunk
+from production_legal_agentic_graph_rag.chunking.pipeline import (
     convert_directory,
     convert_markdown_to_chunks,
     write_atomic,

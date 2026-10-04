@@ -12,12 +12,18 @@ from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_openai import ChatOpenAI
 from pydantic import ValidationError
 
-from production_legal_qa_rag.config import EmbeddingSettings
-from production_legal_qa_rag.evaluation import embeddings_adapter
-from production_legal_qa_rag.evaluation.embeddings_adapter import RagasEmbeddingsAdapter
-from production_legal_qa_rag.evaluation.groq_round_robin import GroqRoundRobinChatModel
-from production_legal_qa_rag.retrieval.llm_throttle import TokenWindowThrottle
-from production_legal_qa_rag.retrieval.models import PrecomputedQuery
+from production_legal_agentic_graph_rag.config import EmbeddingSettings
+from production_legal_agentic_graph_rag.evaluation import embeddings_adapter
+from production_legal_agentic_graph_rag.evaluation.embeddings_adapter import (
+    RagasEmbeddingsAdapter,
+)
+from production_legal_agentic_graph_rag.evaluation.groq_round_robin import (
+    GroqRoundRobinChatModel,
+)
+from production_legal_agentic_graph_rag.retrieval.llm_throttle import (
+    TokenWindowThrottle,
+)
+from production_legal_agentic_graph_rag.retrieval.models import PrecomputedQuery
 
 
 @pytest.mark.parametrize(

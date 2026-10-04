@@ -14,13 +14,13 @@ from test_retrieval_pipeline import (
     FakeSparse,
 )
 
-from production_legal_qa_rag.retrieval import pipeline as pipeline_module
-from production_legal_qa_rag.retrieval.citation import (
+from production_legal_agentic_graph_rag.retrieval import pipeline as pipeline_module
+from production_legal_agentic_graph_rag.retrieval.citation import (
     CITATION_SPARSE_TOP_K,
     citation_extras,
     extract_citation_numbers,
 )
-from production_legal_qa_rag.retrieval.models import SearchHit
+from production_legal_agentic_graph_rag.retrieval.models import SearchHit
 
 # ------------------------------------------------------------- nhận diện
 
@@ -277,7 +277,7 @@ def test_fallback_khi_rerank_loi_van_co_extras_va_khong_crash():
 
 
 def test_api_sub_query_theo_dieu_da_go():
-    from production_legal_qa_rag.retrieval import citation
+    from production_legal_agentic_graph_rag.retrieval import citation
 
     for name in (
         "build_article_queries",

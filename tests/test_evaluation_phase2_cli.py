@@ -10,8 +10,13 @@ from typing import Any
 import pytest
 from typer.testing import CliRunner
 
-from production_legal_qa_rag.evaluation.run_models import EvalConfig, StageSummary
-from production_legal_qa_rag.evaluation.testset_generator import EvalInputError
+from production_legal_agentic_graph_rag.evaluation.run_models import (
+    EvalConfig,
+    StageSummary,
+)
+from production_legal_agentic_graph_rag.evaluation.testset_generator import (
+    EvalInputError,
+)
 from tools import run_eval
 
 
@@ -34,7 +39,7 @@ def test_cli_all_common_options_reach_stage(
     command: str, placement: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     seen: list[EvalConfig] = []
-    prefix = "production_legal_qa_rag.evaluation."
+    prefix = "production_legal_agentic_graph_rag.evaluation."
 
     async def async_stage(config: EvalConfig) -> StageSummary:
         seen.append(config)
@@ -118,7 +123,7 @@ def test_cli_stage_exit_codes(
 
     monkeypatch.setitem(
         sys.modules,
-        "production_legal_qa_rag.evaluation.hyde_stage",
+        "production_legal_agentic_graph_rag.evaluation.hyde_stage",
         SimpleNamespace(run_hyde=stage),
     )
     assert CliRunner().invoke(run_eval.app, ["hyde"]).exit_code == expected
@@ -132,7 +137,7 @@ def test_cli_invalid_input_exit_two_without_provider_payload(
 
     monkeypatch.setitem(
         sys.modules,
-        "production_legal_qa_rag.evaluation.hyde_stage",
+        "production_legal_agentic_graph_rag.evaluation.hyde_stage",
         SimpleNamespace(run_hyde=stage),
     )
     result = CliRunner().invoke(run_eval.app, ["hyde"])

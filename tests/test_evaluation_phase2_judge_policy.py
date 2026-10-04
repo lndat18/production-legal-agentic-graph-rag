@@ -7,19 +7,22 @@ from pathlib import Path
 
 import pytest
 
-from production_legal_qa_rag.evaluation.generate_stage import run_generate
-from production_legal_qa_rag.evaluation.jsonl_store import JsonlStore
-from production_legal_qa_rag.evaluation.key_pool import GenerationWorker
-from production_legal_qa_rag.evaluation.run_models import AnswerRecord, case_id
-from production_legal_qa_rag.generation.generator import GeneratedAnswer
-from production_legal_qa_rag.generation.judge import EvidenceJudge
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.evaluation.generate_stage import run_generate
+from production_legal_agentic_graph_rag.evaluation.jsonl_store import JsonlStore
+from production_legal_agentic_graph_rag.evaluation.key_pool import GenerationWorker
+from production_legal_agentic_graph_rag.evaluation.run_models import (
+    AnswerRecord,
+    case_id,
+)
+from production_legal_agentic_graph_rag.generation.generator import GeneratedAnswer
+from production_legal_agentic_graph_rag.generation.judge import EvidenceJudge
+from production_legal_agentic_graph_rag.generation.models import (
     Citation,
     JudgeIssue,
     JudgeVerdict,
     VerificationIssue,
 )
-from production_legal_qa_rag.retrieval.models import RetrievedChunk
+from production_legal_agentic_graph_rag.retrieval.models import RetrievedChunk
 from tests.test_evaluation_phase2 import make_config, seed_retrieval
 
 

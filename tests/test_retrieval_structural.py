@@ -12,15 +12,15 @@ import pytest
 import test_retrieval_pipeline as pipeline_fakes
 from test_retrieval_pipeline import FakeDense, FakeEmbedder, FakeHyde, FakeSparse
 
-from production_legal_qa_rag.retrieval import pipeline as pipeline_module
-from production_legal_qa_rag.retrieval.bm25 import (
+from production_legal_agentic_graph_rag.retrieval import pipeline as pipeline_module
+from production_legal_agentic_graph_rag.retrieval.bm25 import (
     BM25_PARAMS_VERSION,
     REBUILD_COMMAND,
     BM25Encoder,
     BM25ParamsVersionError,
     tokenize,
 )
-from production_legal_qa_rag.retrieval.citation import (
+from production_legal_agentic_graph_rag.retrieval.citation import (
     MAX_CITATION_KHOANS,
     BreadcrumbRef,
     breadcrumb_structural_terms,
@@ -270,7 +270,7 @@ def structural_meta(monkeypatch: pytest.MonkeyPatch) -> None:
     """id "a5_2" -> Điều 5 Khoản 2; id khác -> breadcrumb không có Điều."""
 
     def meta(chunk_id: str) -> Any:
-        from production_legal_qa_rag.embedding.models import PineconeMetadata
+        from production_legal_agentic_graph_rag.embedding.models import PineconeMetadata
 
         match = re.fullmatch(r"a(\d+)_(\d+)", chunk_id)
         breadcrumb = (

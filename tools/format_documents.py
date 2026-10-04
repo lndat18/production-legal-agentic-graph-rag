@@ -15,7 +15,7 @@ from pathlib import Path
 
 import typer
 
-from production_legal_qa_rag.formatting.pipeline import convert_directory
+from production_legal_agentic_graph_rag.formatting.pipeline import convert_directory
 
 DEFAULT_RAW_DIR = Path("data/raw")
 DEFAULT_OUT_DIR = Path("data/markdown")

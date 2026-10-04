@@ -15,18 +15,27 @@ import pytest
 from pydantic import ValidationError
 from typer.testing import CliRunner
 
-from production_legal_qa_rag.chunking.models import Chunk
-from production_legal_qa_rag.config import EmbeddingSettings, VectorDBSettings
-from production_legal_qa_rag.embedding import hf_client, pinecone_client, pipeline
-from production_legal_qa_rag.embedding.hf_client import (
+from production_legal_agentic_graph_rag.chunking.models import Chunk
+from production_legal_agentic_graph_rag.config import (
+    EmbeddingSettings,
+    VectorDBSettings,
+)
+from production_legal_agentic_graph_rag.embedding import (
+    hf_client,
+    pinecone_client,
+    pipeline,
+)
+from production_legal_agentic_graph_rag.embedding.hf_client import (
     HFRequestLimitExceeded,
     HuggingFaceEmbedder,
 )
-from production_legal_qa_rag.embedding.models import (
+from production_legal_agentic_graph_rag.embedding.models import (
     EmbeddedChunk,
     PineconeMetadata,
 )
-from production_legal_qa_rag.embedding.pinecone_client import PineconeVectorStore
+from production_legal_agentic_graph_rag.embedding.pinecone_client import (
+    PineconeVectorStore,
+)
 
 
 def _chunk(index: int, *, has_table: bool = False) -> Chunk:

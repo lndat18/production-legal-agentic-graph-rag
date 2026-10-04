@@ -18,15 +18,15 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from production_legal_qa_rag.conversation.models import TurnTrace
-from production_legal_qa_rag.generation.models import (
+from production_legal_agentic_graph_rag.conversation.models import TurnTrace
+from production_legal_agentic_graph_rag.generation.models import (
     Citation,
     GuardrailVerdict,
     Usage,
     WarningEvent,
 )
-from production_legal_qa_rag.observability import tracing, turn_trace
-from production_legal_qa_rag.observability.turn_trace import (
+from production_legal_agentic_graph_rag.observability import tracing, turn_trace
+from production_legal_agentic_graph_rag.observability.turn_trace import (
     RuntimeVersions,
     _turn_metadata,
     _turn_tags,

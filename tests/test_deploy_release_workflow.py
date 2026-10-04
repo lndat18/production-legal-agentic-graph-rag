@@ -109,7 +109,9 @@ def test_build_push_cau_hinh(workflow: dict[str, Any]) -> None:
 
 def test_tag_cpu_cu126_latest(workflow: dict[str, Any], workflow_text: str) -> None:
     """`vX.Y.Z-<variant>` cho cả hai; `latest` chỉ ghép cho cpu; ảnh viết thường."""
-    assert workflow["env"]["IMAGE"] == "ghcr.io/lndat18/production-legal-qa-rag"
+    assert (
+        workflow["env"]["IMAGE"] == "ghcr.io/lndat18/production-legal-agentic-graph-rag"
+    )
     assert workflow["env"]["IMAGE"] == workflow["env"]["IMAGE"].lower()
 
     tag_step = next(

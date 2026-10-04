@@ -29,8 +29,10 @@ from pathlib import Path
 
 import typer
 
-from production_legal_qa_rag.evaluation.corpus_loader import DEFAULT_MARKDOWN_DIR
-from production_legal_qa_rag.evaluation.testset_generator import (
+from production_legal_agentic_graph_rag.evaluation.corpus_loader import (
+    DEFAULT_MARKDOWN_DIR,
+)
+from production_legal_agentic_graph_rag.evaluation.testset_generator import (
     DEFAULT_OUTPUT_DIR,
     EvalInputError,
     UnitGenerationError,

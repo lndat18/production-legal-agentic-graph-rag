@@ -8,8 +8,8 @@ from typing import Any
 
 import pytest
 
-from production_legal_qa_rag.retrieval.hyde import HydeGenerator
-from production_legal_qa_rag.retrieval.loop_bound import LoopBoundClient
+from production_legal_agentic_graph_rag.retrieval.hyde import HydeGenerator
+from production_legal_agentic_graph_rag.retrieval.loop_bound import LoopBoundClient
 
 
 def test_get_ngoai_coroutine_raise_runtime_error():

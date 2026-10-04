@@ -16,16 +16,19 @@ from typing import Any, Literal
 import pytest
 from typer.testing import CliRunner
 
-from production_legal_qa_rag.evaluation import testset_generator as tg
-from production_legal_qa_rag.evaluation.groq_round_robin import (
+from production_legal_agentic_graph_rag.evaluation import testset_generator as tg
+from production_legal_agentic_graph_rag.evaluation.groq_round_robin import (
     DailyQuotaExhaustedError,
 )
-from production_legal_qa_rag.evaluation.models import (
+from production_legal_agentic_graph_rag.evaluation.models import (
     GenerationProgress,
     GoldenTestCase,
     UnitFailure,
 )
-from production_legal_qa_rag.evaluation.unit_splitter import EvalUnit, split_directory
+from production_legal_agentic_graph_rag.evaluation.unit_splitter import (
+    EvalUnit,
+    split_directory,
+)
 
 SINGLE = "single_hop_specific_query_synthesizer"
 ABSTRACT = "multi_hop_abstract_query_synthesizer"
@@ -1062,7 +1065,7 @@ def _stratified_raw() -> list[GoldenTestCase]:
 def _review(
     raw: list[GoldenTestCase], keep: set[int] | None = None
 ) -> list[dict[str, str]]:
-    from production_legal_qa_rag.evaluation.run_models import case_id
+    from production_legal_agentic_graph_rag.evaluation.run_models import case_id
 
     return [
         {

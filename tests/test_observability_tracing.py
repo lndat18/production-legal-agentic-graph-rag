@@ -19,8 +19,8 @@ from typing import Any
 
 import pytest
 
-from production_legal_qa_rag.config import LangfuseSettings
-from production_legal_qa_rag.observability import tracing
+from production_legal_agentic_graph_rag.config import LangfuseSettings
+from production_legal_agentic_graph_rag.observability import tracing
 
 
 def _khong_doc_dotenv(monkeypatch: pytest.MonkeyPatch) -> None:

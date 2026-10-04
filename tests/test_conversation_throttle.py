@@ -8,20 +8,20 @@ from typing import Any
 
 import pytest
 
-from production_legal_qa_rag.config import (
+from production_legal_agentic_graph_rag.config import (
     CondenseSettings,
     HydeSettings,
     ThrottleSettings,
 )
-from production_legal_qa_rag.conversation.condenser import (
+from production_legal_agentic_graph_rag.conversation.condenser import (
     CONDENSE_SYSTEM_PROMPT,
     CondenseReason,
     QueryCondenser,
     build_condense_user_message,
 )
-from production_legal_qa_rag.conversation.models import ChatMessage
-from production_legal_qa_rag.retrieval.hyde import HydeGenerator
-from production_legal_qa_rag.retrieval.llm_throttle import (
+from production_legal_agentic_graph_rag.conversation.models import ChatMessage
+from production_legal_agentic_graph_rag.retrieval.hyde import HydeGenerator
+from production_legal_agentic_graph_rag.retrieval.llm_throttle import (
     Reservation,
     ThrottleTimeout,
     TokenWindowThrottle,

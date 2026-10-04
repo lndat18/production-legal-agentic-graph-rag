@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 env:
-  IMAGE: ghcr.io/lndat18/production-legal-qa-rag
+  IMAGE: ghcr.io/lndat18/production-legal-agentic-graph-rag
 
 jobs:
   gate:

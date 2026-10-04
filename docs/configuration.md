@@ -63,7 +63,7 @@
 
 - Chạy `./observability/down.sh` để tắt và giữ dữ liệu.
 - Production vẫn chạy khi observe tắt, nhưng không lưu nhật ký lượt hỏi đáp.
-- Chi tiết: [observability_spec.md](../src/production_legal_qa_rag/observability/observability_spec.md).
+- Chi tiết: [observability_spec.md](../src/production_legal_agentic_graph_rag/observability/observability_spec.md).
 
 ## Kiểm tra tên biến
 
