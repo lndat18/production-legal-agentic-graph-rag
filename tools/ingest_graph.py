@@ -16,6 +16,7 @@ import logging
 from pathlib import Path
 
 import typer
+from neo4j.exceptions import DriverError, Neo4jError
 
 from production_legal_agentic_graph_rag.config import Neo4jSettings
 from production_legal_agentic_graph_rag.graph.models import DocumentOutcome
@@ -28,7 +29,7 @@ from production_legal_agentic_graph_rag.graph.store import GraphStore, Neo4jGrap
 DEFAULT_MARKDOWN_DIR = Path("data/markdown")
 DEFAULT_CHUNKS_DIR = Path("data/chunks")
 
-app = typer.Typer(add_completion=False)
+app = typer.Typer(add_completion=False, pretty_exceptions_show_locals=False)
 
 
 def _print_outcome(outcome: DocumentOutcome) -> None:
@@ -61,9 +62,9 @@ def main(
     """Ingest văn bản vào Neo4j; thoát mã 1 nếu có văn bản lỗi."""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     store: GraphStore | None = None
-    if not dry_run:
-        store = Neo4jGraphStore.from_settings(Neo4jSettings())  # type: ignore[call-arg]
     try:
+        if not dry_run:
+            store = Neo4jGraphStore.from_settings(Neo4jSettings())  # type: ignore[call-arg]
         if file is None:
             outcomes = ingest_directory(markdown_dir, chunks_dir, store)
         else:
@@ -71,6 +72,10 @@ def main(
                 store.ensure_schema()
             chunks_path = (chunks_dir / file.name).with_suffix(".json")
             outcomes = [ingest_document(file, chunks_path, store)]
+    except (Neo4jError, DriverError, OSError) as error:
+        # Chỉ in tên loại lỗi: thông điệp driver có thể chứa URI/thông tin kết nối.
+        typer.echo(f"Lỗi Neo4j/IO: {type(error).__name__}", err=True)
+        raise typer.Exit(code=1) from None
     finally:
         if store is not None:
             store.close()

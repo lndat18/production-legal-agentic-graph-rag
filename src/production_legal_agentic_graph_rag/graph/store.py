@@ -38,6 +38,10 @@ _ALL_STRUCTURAL_RELS = "|".join(STRUCTURAL_REL_BY_CHILD.values())
 _DOC_TO_UNIT_RELS = "HAS_PART|HAS_CHAPTER|HAS_SECTION|HAS_ARTICLE"
 
 
+class AmbiguousUnitError(ValueError):
+    """Nhãn đơn vị khớp nhiều hơn một node trong văn bản; cần `parent_label`."""
+
+
 class GraphStore(abc.ABC):
     """Interface ghi/đọc graph; test dùng `InMemoryGraphStore` qua interface này."""
 
@@ -57,9 +61,17 @@ class GraphStore(abc.ABC):
 
     @abc.abstractmethod
     def get_table_of_contents(
-        self, short_name: str, node_label: NodeLabel, label: str
+        self,
+        short_name: str,
+        node_label: NodeLabel,
+        label: str,
+        parent_label: str | None = None,
     ) -> list[TocEntry]:
-        """Mục lục: con trực tiếp của Phần/Chương/Mục theo `order`."""
+        """Mục lục: con trực tiếp của Phần/Chương/Mục theo `order`.
+
+        Nhãn Mục lặp ở nhiều Chương trong cùng văn bản: truyền `parent_label` (nhãn
+        Chương/Phần cha) để định vị; khớp hơn một đơn vị thì ném `AmbiguousUnitError`.
+        """
 
     @abc.abstractmethod
     def get_clause_context(self, chunk_id: str) -> ClauseContext | None:
@@ -73,9 +85,13 @@ class GraphStore(abc.ABC):
 
     @abc.abstractmethod
     def count_descendants(
-        self, short_name: str, node_label: NodeLabel, label: str
+        self,
+        short_name: str,
+        node_label: NodeLabel,
+        label: str,
+        parent_label: str | None = None,
     ) -> dict[str, int]:
-        """Đếm node con cháu theo nhãn của một đơn vị."""
+        """Đếm node con cháu theo nhãn của một đơn vị (`parent_label` như mục lục)."""
 
     def close(self) -> None:
         """Giải phóng kết nối (nếu có)."""
@@ -279,20 +295,51 @@ class Neo4jGraphStore(GraphStore):
         )
         return [_clause_view(record["c"]) for record in records]
 
-    def get_table_of_contents(
-        self, short_name: str, node_label: NodeLabel, label: str
-    ) -> list[TocEntry]:
-        """Xem `GraphStore.get_table_of_contents`."""
+    def _resolve_unit_id(
+        self,
+        short_name: str,
+        node_label: NodeLabel,
+        label: str,
+        parent_label: str | None,
+    ) -> str | None:
         _require_unit_label(node_label)
         records = self._read(
             _cypher(
-                _UNIT_MATCH + f"(u:{node_label.value} {{label: $label}})"
-                "-[:HAS_CHAPTER|HAS_SECTION|HAS_ARTICLE]->(child) "
-                "RETURN labels(child)[0] AS node_label, child "
-                "ORDER BY u.order, child.order"
+                _UNIT_MATCH + f"(u:{node_label.value} {{label: $label}}) "
+                "WHERE $parent_label IS NULL OR EXISTS { "
+                "MATCH (p)-[:HAS_PART|HAS_CHAPTER|HAS_SECTION]->(u) "
+                "WHERE p.label = $parent_label } "
+                "RETURN DISTINCT u.id AS id"
             ),
             short_name=short_name,
             label=label,
+            parent_label=parent_label,
+        )
+        if len(records) > 1:
+            raise AmbiguousUnitError(
+                f"{node_label.value} {label} khớp {len(records)} đơn vị trong {short_name}"
+            )
+        return records[0]["id"] if records else None
+
+    def get_table_of_contents(
+        self,
+        short_name: str,
+        node_label: NodeLabel,
+        label: str,
+        parent_label: str | None = None,
+    ) -> list[TocEntry]:
+        """Xem `GraphStore.get_table_of_contents`."""
+        unit_id = self._resolve_unit_id(short_name, node_label, label, parent_label)
+        if unit_id is None:
+            return []
+        records = self._read(
+            _cypher(
+                "MATCH (u {id: $unit_id})"
+                "-[:HAS_CHAPTER|HAS_SECTION|HAS_ARTICLE]->(child) "
+                "RETURN labels(child)[0] AS node_label, child "
+                "ORDER BY child.order"
+            ),
+            unit_id=unit_id,
         )
         return [_toc_entry(record["node_label"], record["child"]) for record in records]
 
@@ -354,18 +401,23 @@ class Neo4jGraphStore(GraphStore):
         )
 
     def count_descendants(
-        self, short_name: str, node_label: NodeLabel, label: str
+        self,
+        short_name: str,
+        node_label: NodeLabel,
+        label: str,
+        parent_label: str | None = None,
     ) -> dict[str, int]:
         """Xem `GraphStore.count_descendants`."""
-        _require_unit_label(node_label)
+        unit_id = self._resolve_unit_id(short_name, node_label, label, parent_label)
+        if unit_id is None:
+            return {}
         records = self._read(
             _cypher(
-                _UNIT_MATCH + f"(u:{node_label.value} {{label: $label}}) "
+                "MATCH (u {id: $unit_id}) "
                 f"MATCH (u)-[:{_ALL_STRUCTURAL_RELS}*]->(n) "
                 "RETURN labels(n)[0] AS node_label, count(DISTINCT n) AS total"
             ),
-            short_name=short_name,
-            label=label,
+            unit_id=unit_id,
         )
         return {record["node_label"]: record["total"] for record in records}
 
@@ -420,20 +472,32 @@ class InMemoryGraphStore(GraphStore):
             None,
         )
 
-    def _units(
-        self, short_name: str, node_label: NodeLabel, label: str
-    ) -> tuple[GraphDocument, list[StructureNode | ArticleNode]]:
+    def _unit(
+        self,
+        short_name: str,
+        node_label: NodeLabel,
+        label: str,
+        parent_label: str | None,
+    ) -> tuple[GraphDocument, StructureNode | ArticleNode] | None:
         _require_unit_label(node_label)
         graph = self._document(short_name)
         if graph is None:
-            raise KeyError(short_name)
-        pool = graph.units()
+            return None
+        label_by_id = {s.id: s.label for s in graph.structures}
         units = [
             node
-            for node in pool
-            if node.node_label is node_label and node.label == label
+            for node in graph.units()
+            if node.node_label is node_label
+            and node.label == label
+            and (
+                parent_label is None or label_by_id.get(node.parent_id) == parent_label
+            )
         ]
-        return graph, units
+        if len(units) > 1:
+            raise AmbiguousUnitError(
+                f"{node_label.value} {label} khớp {len(units)} đơn vị trong {short_name}"
+            )
+        return (graph, units[0]) if units else None
 
     def get_article_clauses(
         self, short_name: str, article_label: str
@@ -447,20 +511,19 @@ class InMemoryGraphStore(GraphStore):
         return [_clause_view_of(c) for c in sorted(clauses, key=lambda c: c.order)]
 
     def get_table_of_contents(
-        self, short_name: str, node_label: NodeLabel, label: str
+        self,
+        short_name: str,
+        node_label: NodeLabel,
+        label: str,
+        parent_label: str | None = None,
     ) -> list[TocEntry]:
         """Xem `GraphStore.get_table_of_contents`."""
-        try:
-            graph, units = self._units(short_name, node_label, label)
-        except KeyError:
+        found = self._unit(short_name, node_label, label, parent_label)
+        if found is None:
             return []
-        entries: list[TocEntry] = []
-        for unit in sorted(units, key=lambda u: u.order):
-            children = [node for node in graph.units() if node.parent_id == unit.id]
-            entries.extend(
-                _toc_entry_of(c) for c in sorted(children, key=lambda c: c.order)
-            )
-        return entries
+        graph, unit = found
+        children = [node for node in graph.units() if node.parent_id == unit.id]
+        return [_toc_entry_of(c) for c in sorted(children, key=lambda c: c.order)]
 
     def get_clause_context(self, chunk_id: str) -> ClauseContext | None:
         """Xem `GraphStore.get_clause_context`."""
@@ -560,21 +623,24 @@ class InMemoryGraphStore(GraphStore):
         )
 
     def count_descendants(
-        self, short_name: str, node_label: NodeLabel, label: str
+        self,
+        short_name: str,
+        node_label: NodeLabel,
+        label: str,
+        parent_label: str | None = None,
     ) -> dict[str, int]:
         """Xem `GraphStore.count_descendants`."""
-        try:
-            graph, units = self._units(short_name, node_label, label)
-        except KeyError:
+        found = self._unit(short_name, node_label, label, parent_label)
+        if found is None:
             return {}
+        graph, unit = found
         label_by_id = {n.id: n.node_label for n in graph.all_nodes()}
         parent_by_id = {n.id: n.parent_id for n in graph.all_nodes()}
-        unit_ids = {u.id for u in units}
         counts: dict[str, int] = defaultdict(int)
         for node_id, node_type in label_by_id.items():
             ancestor = parent_by_id[node_id]
             while ancestor is not None:
-                if ancestor in unit_ids:
+                if ancestor == unit.id:
                     counts[node_type.value] += 1
                     break
                 ancestor = parent_by_id.get(ancestor)
