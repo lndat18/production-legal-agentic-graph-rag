@@ -13,6 +13,7 @@ dependencies = [
     "huggingface-hub>=1.31.0",
     "langchain-openai>=1.6.4",
     "langchain-text-splitters>=1.1.2",
+    "neo4j>=6.4.0",
     "pinecone>=8.0.0",
     "protobuf>=7.36.2",
     "pydantic>=2.13.4",
@@ -39,6 +40,7 @@ build-backend = "uv_build"
 testpaths = ["tests"]
 markers = [
     "slow: test nạp model thật (~20s), bỏ qua bằng -m 'not slow'",
+    "integration: test cần dịch vụ ngoài thật (Neo4j qua Docker), bỏ qua bằng -m 'not integration'",
 ]
 # "." để import được `tests.fixtures.blocks` và `tests.loader_under_test`.
 pythonpath = ["src", "."]
