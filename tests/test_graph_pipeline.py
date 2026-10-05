@@ -78,9 +78,7 @@ def test_report_counts_repealed_clauses_only_on_exact_line(tmp_path: Path) -> No
 
 
 def test_build_report_counts_bare_huong_dan(tmp_path: Path) -> None:
-    markdown_path, chunks_path = _paths(
-        tmp_path, "Nghị định mẫu", HUONG_DAN_MARKDOWN
-    )
+    markdown_path, chunks_path = _paths(tmp_path, "Nghị định mẫu", HUONG_DAN_MARKDOWN)
 
     graph, report = build_document_graph(markdown_path, chunks_path)
 

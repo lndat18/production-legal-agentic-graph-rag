@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, Self
 
 import pytest
 
@@ -18,7 +18,7 @@ from production_legal_agentic_graph_rag.graph.store import (
     InMemoryGraphStore,
     Neo4jGraphStore,
 )
-from tests.graph_helpers import GOC_MARKDOWN, build_with_references, write_document
+from tests.graph_helpers import GOC_MARKDOWN, build_with_references
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
 TNCN = "Luật thuế thu nhập cá nhân"
@@ -98,7 +98,9 @@ def test_toc_rejects_non_unit_label(store: InMemoryGraphStore) -> None:
 def test_clause_context_from_chunk_id(
     store: InMemoryGraphStore, graph: GraphDocument
 ) -> None:
-    clause = next(c for c in graph.clauses if c.label == "2" and "không cư trú" in c.text)
+    clause = next(
+        c for c in graph.clauses if c.label == "2" and "không cư trú" in c.text
+    )
 
     context = store.get_clause_context(clause.chunk_ids[0])
 
@@ -145,7 +147,9 @@ def test_reference_cards_for_whole_article_include_incoming(
 ) -> None:
     cards = store.get_reference_cards("Luật mẫu", "3", None)
 
-    assert len(cards.outgoing) == 5  # Khoản 1 (1) + Khoản 2 (2 Điểm) + Khoản 3 (range 2)
+    assert (
+        len(cards.outgoing) == 5
+    )  # Khoản 1 (1) + Khoản 2 (2 Điểm) + Khoản 3 (range 2)
     assert len(cards.incoming) == 1
     assert cards.incoming[0].article_label == "4"
 
@@ -246,7 +250,7 @@ class _FakeSession:
     def __init__(self, log: list[tuple[str, dict[str, Any]]]) -> None:
         self._log = log
 
-    def __enter__(self) -> _FakeSession:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *_: object) -> None:
@@ -318,9 +322,7 @@ def test_neo4j_ensure_schema_creates_unique_constraint_per_label() -> None:
     assert len(queries) == len(NodeLabel)
     for label in NodeLabel:
         assert any(
-            f"(n:{label.value})" in q
-            and "IF NOT EXISTS" in q
-            and "n.id IS UNIQUE" in q
+            f"(n:{label.value})" in q and "IF NOT EXISTS" in q and "n.id IS UNIQUE" in q
             for q in queries
         )
 

@@ -57,9 +57,7 @@ def _resolve(
     point_a: str = "Điểm a.",
     header: str = "LUẬT",
 ) -> tuple[GraphDocument, ReferenceStats]:
-    markdown = _TEMPLATE.format(
-        header=header, title="MẪU", text=text, point_a=point_a
-    )
+    markdown = _TEMPLATE.format(header=header, title="MẪU", text=text, point_a=point_a)
     graph, _, _ = build_from_markdown(tmp_path, "van-ban", markdown)
     edges, stats = resolve_references(graph)
     return graph.model_copy(update={"references": edges}), stats
@@ -216,7 +214,8 @@ def test_missing_target_counted_not_linked(tmp_path: Path) -> None:
 
 def test_missing_clause_and_point_targets_counted(tmp_path: Path) -> None:
     graph, stats = _resolve(
-        tmp_path, "Theo khoản 9 Điều 1 của Luật này và điểm z khoản 1 Điều 1 của Luật này."
+        tmp_path,
+        "Theo khoản 9 Điều 1 của Luật này và điểm z khoản 1 Điều 1 của Luật này.",
     )
 
     assert graph.references == []
@@ -265,7 +264,9 @@ def test_ambiguous_clause_over_multiple_articles_creates_no_edge(
 def test_ambiguous_point_over_multiple_clauses_creates_no_edge(
     tmp_path: Path,
 ) -> None:
-    graph, stats = _resolve(tmp_path, "Theo điểm a khoản 1 và khoản 2 Điều 1 của Luật này.")
+    graph, stats = _resolve(
+        tmp_path, "Theo điểm a khoản 1 và khoản 2 Điều 1 của Luật này."
+    )
 
     assert graph.references == []
     assert stats.unresolved_target == 1
@@ -289,9 +290,7 @@ def test_reference_to_own_clause_skipped(tmp_path: Path) -> None:
 
 
 def test_point_referring_to_parent_clause_skipped(tmp_path: Path) -> None:
-    graph, stats = _resolve(
-        tmp_path, "Không có.", point_a="Theo khoản 1 Điều này."
-    )
+    graph, stats = _resolve(tmp_path, "Không có.", point_a="Theo khoản 1 Điều này.")
 
     assert graph.references == []
     assert stats.self_skipped == 1

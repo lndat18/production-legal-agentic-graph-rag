@@ -82,7 +82,9 @@ def test_real_run_writes_to_store_and_closes_it(
     closed: list[bool] = []
     store.close = lambda: closed.append(True)  # type: ignore[method-assign]
     monkeypatch.setattr(
-        ingest_graph, "Neo4jSettings", lambda: Neo4jSettings(_env_file=None, password="x")
+        ingest_graph,
+        "Neo4jSettings",
+        lambda: Neo4jSettings(_env_file=None, password="x"),
     )
     monkeypatch.setattr(
         Neo4jGraphStore, "from_settings", classmethod(lambda cls, settings: store)

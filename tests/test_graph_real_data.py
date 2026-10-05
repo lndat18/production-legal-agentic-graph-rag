@@ -16,7 +16,7 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def _build(name: str):  # noqa: ANN202
+def _build(name: str):
     return build_document_graph(
         DATA_DIR / "markdown" / f"{name}.md", DATA_DIR / "chunks" / f"{name}.json"
     )

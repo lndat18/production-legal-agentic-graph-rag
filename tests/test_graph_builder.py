@@ -37,11 +37,11 @@ def goc(tmp_path: Path) -> GraphDocument:
     return graph
 
 
-def _article(graph: GraphDocument, label: str):  # noqa: ANN202
+def _article(graph: GraphDocument, label: str):
     return next(a for a in graph.articles if a.label == label)
 
 
-def _clauses_of(graph: GraphDocument, article_label: str):  # noqa: ANN202
+def _clauses_of(graph: GraphDocument, article_label: str):
     article = _article(graph, article_label)
     return sorted(
         (c for c in graph.clauses if c.parent_id == article.id), key=lambda c: c.order
@@ -236,7 +236,9 @@ def test_char_count_sums_clause_text_up_the_tree(goc: GraphDocument) -> None:
     expected_article = sum(len(c.text) for c in _clauses_of(goc, "2"))
     chapter_1 = next(s for s in goc.structures if s.label == "I")
     expected_chapter = sum(
-        len(c.text) for c in goc.clauses if c.parent_id in {a.id for a in goc.articles if a.parent_id == chapter_1.id}
+        len(c.text)
+        for c in goc.clauses
+        if c.parent_id in {a.id for a in goc.articles if a.parent_id == chapter_1.id}
     )
 
     assert article.char_count == expected_article > 0
