@@ -311,3 +311,20 @@ class ApiSettings(BaseSettings):
     chatbot_api_key: SecretStr = Field(validation_alias="CHATBOT_API_KEY")
     rate_limit_per_minute: int = 5
     keepalive_seconds: float = 15.0
+
+
+class Neo4jSettings(BaseSettings):
+    """Kết nối Neo4j cho knowledge graph (graph_spec.md mục 8).
+
+    `password` là `SecretStr` để không lộ khi repr/log; package `graph/` không tự
+    đọc `.env`, chỉ nhận cấu hình qua class này.
+    """
+
+    model_config = SettingsConfigDict(
+        env_file=".env", env_prefix="NEO4J_", extra="ignore", env_ignore_empty=True
+    )
+
+    uri: str = "bolt://localhost:7687"
+    user: str = "neo4j"
+    password: SecretStr
+    database: str = "neo4j"
