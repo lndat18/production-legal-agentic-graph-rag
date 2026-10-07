@@ -1,6 +1,6 @@
 # Graph — Ingest văn bản pháp luật vào Neo4j: Reference Spec
 
-Trạng thái: Approved (2026-10-05)
+Trạng thái: Approved (2026-10-07; đổi hạ tầng sang Aura 2026-10-06)
 
 - Spec liên quan: [chunking_spec.md](../chunking/chunking_spec.md), [embedding_spec.md](../embedding/embedding_spec.md), [retrieval_spec.md](../retrieval/retrieval_spec.md).
 - Số mục cố định sau khi `Approved`. Các điểm chưa chốt gom ở mục 12.
@@ -124,7 +124,11 @@ Trạng thái: Approved (2026-10-05)
 - Mỗi văn bản một transaction: xoá phần graph cũ của văn bản đó, `MERGE` theo `id`, ghi node cấu trúc → node con → cạnh `REFERS_TO`.
 - Constraint `UNIQUE` trên `id` mỗi nhãn node; tạo trong bước khởi tạo, `IF NOT EXISTS`.
 - Kết nối qua `config.py` (URI/user/password từ `.env`); package không tự đọc `.env`.
-- Hạ tầng (quyết định đã chốt): Neo4j Community 5.x chạy bằng Docker local cho dev và integration test (marker `integration`); một database, constraint `UNIQUE`. Đưa Neo4j vào compose/CI là việc của người dùng trong PR `chore` riêng; `deploy/` và `.env.example` hiện chưa có Neo4j.
+- Hạ tầng (đổi 2026-10-06, thay quyết định Docker local ban đầu): Neo4j Aura (managed cloud, gói Free) cho cả dev, integration test (marker `integration`) và production; kết nối `neo4j+s://…` (TLS), một database, constraint `UNIQUE`. Không có Neo4j trong `deploy/` hay compose.
+  - Giới hạn Free (xác nhận lại trên trang Neo4j trước khi dựa vào): khoảng 200K node / 400K quan hệ (corpus hiện ~4.100 node, ~5.300 quan hệ), tự pause khi ít truy cập và bị xoá nếu pause lâu.
+  - Hệ quả chấp nhận: DB bị pause thì truy vấn lỗi cho tới khi resume tay; mất dữ liệu thì dựng lại bằng `tools/ingest_graph.py` (mục 3, idempotent).
+  - Integration test dùng instance Aura riêng hoặc xoá sạch trước khi chạy, không dùng chung với dữ liệu thật.
+  - Thông tin kết nối (`NEO4J_URI`/`USER`/`PASSWORD`/`DATABASE`) chỉ ở `.env`; thêm vào `.env.example` là việc của người dùng trong PR `chore`.
 - Cấu trúc không có node tương ứng (vd. Phụ lục; corpus hiện tại không có Phụ lục hay Phần): **fail cả văn bản** và báo rõ, không bỏ qua âm thầm.
 
 ## 9. Kiểm tra sau ingest
