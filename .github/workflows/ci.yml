@@ -34,12 +34,13 @@ jobs:
 
           MERGE_BASE=$(git merge-base "$BASE" "$HEAD")
           CHANGED_CODE=$(git diff --name-only "$MERGE_BASE" "$HEAD" \
-            | grep -E '^(src/|tests/|tools/|pyproject\.toml|uv\.lock|\.github/workflows/)' || true)
+            | grep -E '^(src/|tests/|tools/|pyproject\.toml|uv\.lock|\.github/workflows/)' \
+            | grep -vE '\.md$' || true)
 
           if [ -n "$CHANGED_CODE" ]; then
             echo "code_changed=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Diff không đụng src/tests/tools/pyproject.toml/uv.lock/.github/workflows -- skip check nặng."
+            echo "Diff không đụng code (src/tests/tools/pyproject.toml/uv.lock/.github/workflows, trừ file .md) -- skip check nặng."
             echo "code_changed=false" >> "$GITHUB_OUTPUT"
           fi
 

@@ -79,7 +79,7 @@
 
 - `main` được bảo vệ (bật 2026-10-04): bắt buộc PR, check `checks` xanh (`strict`), cấm force-push/xoá; admin bypass được.
 - **Không dùng `[skip ci]`**: check treo pending, không merge được.
-- CI chạy đủ khi diff **cả PR** đụng `src/`, `tests/`, `tools/`, `pyproject.toml`, `uv.lock`, `.github/workflows/` (spec `.md` dưới `src/` cũng tính).
+- CI chạy đủ khi diff **cả PR** đụng `src/`, `tests/`, `tools/`, `pyproject.toml`, `uv.lock`, `.github/workflows/`; file `.md` (kể cả spec dưới `src/`) không tính: PR chỉ đổi `.md` thì CI bỏ qua các bước nặng và `checks` vẫn xanh.
 - Merge squash: xoá branch cũ phải `git branch -D` (không phải `-d`); agent bị deny lệnh này, **người dùng tự chạy**.
 - `git checkout main` khi còn sửa chưa commit ở file mà `main` có bản khác sẽ bị chặn → `git stash` trước.
 - Quy ước git:
