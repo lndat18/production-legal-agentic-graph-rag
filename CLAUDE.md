@@ -85,7 +85,7 @@
 - Quy ước git:
   - Tên branch `<loại>/<mô-tả-kebab-case>`, loại ∈ `feat`, `fix`, `refactor`, `docs`, `chore`, `test` (vd. `chore/agent-working`, `feat/kg-graph-retrieval`).
   - Branch ngắn hạn, tạo từ `main`, PR vào `main`, không lồng branch.
-  - Commit message `loại(phạm-vi): mô tả` (conventional commits); commit do Claude tạo kết thúc bằng dòng `Co-Authored-By`.
+  - Commit message `loại(phạm-vi): mô tả` (conventional commits); **không thêm dòng `Co-Authored-By`** (kể cả commit do Claude tạo).
   - Tag `vX.Y.Z` chỉ gắn trên `main` sau merge, ở mốc có thể phát hành; không gắn sau mỗi merge.
 - **Sau khi sửa `CLAUDE.md`, mở phiên mới (hoặc `/compact`) trước khi gọi `develop-cycle`:** `CLAUDE.md` nạp lúc bắt đầu phiên và subagent nhận bản đó. Định nghĩa agent (`.claude/agents/*.md`) tự nạp lại sau vài giây (trừ khi tạo thư mục `agents` mới). Quyền trong `settings.json`: chưa kiểm chứng, nên mở phiên mới cho chắc.
 - Việc không có spec (chore, docs, đổi tên, cấu hình): làm tay, không dùng `develop-cycle`; chỉ cần CI `checks` xanh rồi người dùng tự merge squash.
